@@ -6,53 +6,64 @@
 #    By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/12/16 13:35:35 by kdustin           #+#    #+#              #
-#    Updated: 2020/12/16 17:17:07 by kdustin          ###   ########.fr        #
+#    Updated: 2020/12/17 15:59:28 by kdustin          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 SRC_DIR := sources
-SRC_SUB_DIR := buildin execute parser signal
+SRC_SUB_DIR := buildin error execute parser signal tests
 OBJ_DIR := objects
 BIN_DIR := .
 INC_DIR := includes
 
 NAME := $(BIN_DIR)/minishell
 LIBFT_DIR := libft
-LDFLAGS := -Llibft
+
+LDFLAGS := -L$(LIBFT_DIR)
 LDLIBS := -lft
 
-CFLAGS := -Wall -Werror -Wextra
-
+CFLAGS := -g -Wall -Werror -Wextra
 
 SRCS_BUILDIN := $(addprefix buildin/,	cd.c		\
 										echo.c		\
 										env.c		\
-										exit.c 		\
-										export.c 	\
-										ls.c 		\
-										pwd.c 		\
+										exit.c		\
+										export.c	\
+										ls.c		\
+										pwd.c		\
 										unset.c)
-SRCS_EXECUTE := $(addprefix execute/, )
+
+SRCS_ERROR := $(addprefix error/,		error.c)
+
+SRCS_EXECUTE := $(addprefix execute/,	command.c 			\
+										execute_utils.c		\
+										simple_command.c)
+
 SRCS_PARSER := $(addprefix parser/, )
 SRCS_SIGNAL := $(addprefix signal/, )
+SRCS_TESTS := $(addprefix tests/,		simple_command_test.c)
 
-SRCS := $(addprefix $(SRC_DIR)/,	$(SRCS_BUILDIN) \
-									$(SRCS_EXECUTE) \
-									$(SRCS_PARSER) 	\
-									$(SRCS_SIGNAL) 	\
+SRCS := $(addprefix $(SRC_DIR)/,	$(SRCS_BUILDIN)	\
+									$(SRCS_ERROR)	\
+									$(SRCS_EXECUTE)	\
+									$(SRCS_PARSER)	\
+									$(SRCS_SIGNAL)	\
 									main.c)
 
+SRCS_TEST := SRCS $(addprefix $(SRC_DIR)/, $(SRCS_TESTS))
+
 OBJS := $(addprefix $(OBJ_DIR)/, $(notdir $(patsubst %.c, %.o, $(SRCS))))
+OBJS_TEST := $(addprefix $(OBJ_DIR)/, $(notdir $(patsubst %.c, %.o, $(SRCS_TESTS))))
 
 all: $(NAME)
 
 $(NAME): $(OBJS) | $(BIN_DIR)
-	$(MAKE) -C $(LIBFT_DIR)/
+	$(MAKE) -C $(LIBFT_DIR)/ bonus
 	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
 
 vpath %.c $(SRC_DIR) $(addprefix $(SRC_DIR)/, $(SRC_SUB_DIR))
 
-$(OBJ_DIR)/%.o: %.c | $(OBJ_DIR)
+$(OBJ_DIR)/%.o: %.c $(INC_DIR)/minishell.h | $(OBJ_DIR)
 	$(CC) $(CFLAGS) -I$(INC_DIR) -I$(LIBFT_DIR) -c $< -o $@
 
 $(BIN_DIR) $(OBJ_DIR):
@@ -70,3 +81,8 @@ re: fclean all
 	$(MAKE) -C $(LIBFT_DIR)/ re
 
 .PHONY: all clean fclean re
+
+simple_command_test: objects/simple_command_test.o objects/simple_command.o objects/execute_utils.o
+	$(MAKE) -C $(LIBFT_DIR)/ bonus
+	$(CC) $(CFLAGS) $(LDFLAGS) $^ $(LDLIBS) -o simple_command_test
+
