@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/17 06:32:13 by kdustin           #+#    #+#             */
-/*   Updated: 2020/12/17 16:20:11 by kdustin          ###   ########.fr       */
+/*   Updated: 2020/12/17 19:13:24 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,7 @@ t_sim_cmd	*create_sim_cmd(void)
 
 	if (!(new_sim_cmd = (t_sim_cmd*)malloc(sizeof(t_sim_cmd))))
 		return (NULL);
-	new_sim_cmd->n_args = 0;
-	new_sim_cmd->n_avble_args = 0;
+	new_sim_cmd->argc = 0;
 	new_sim_cmd->args = NULL;
 	return (new_sim_cmd);
 }
@@ -58,6 +57,6 @@ int			insert_arg(t_sim_cmd *sim_cmd, char *arg)
 			return (-1);
 		}
 	}
-	sim_cmd->n_args++;
+	sim_cmd->argc++;
 	return (0);
 }

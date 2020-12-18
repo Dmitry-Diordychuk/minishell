@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/16 17:02:02 by kdustin           #+#    #+#             */
-/*   Updated: 2020/12/17 16:15:13 by kdustin          ###   ########.fr       */
+/*   Updated: 2020/12/17 19:20:37 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,17 +28,16 @@ void error(char *message);
 
 typedef struct			s_sim_cmd
 {
-	int					n_avble_args;
-	int					n_args;
+	int					argc;
 	char				**args;
 }						t_sim_cmd;
+
 t_sim_cmd				*create_sim_cmd();
 int						insert_arg(t_sim_cmd *sim_cmd, char *arg);
 
 typedef struct			s_cmd
 {
-	int					n_avble_sim_cmds;
-	int					n_sim_cmds;
+	int					cmdc;
 	t_sim_cmd			*sim_cmds;
 	char				*out_file;
 	char				*in_file;

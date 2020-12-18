@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/17 15:43:40 by kdustin           #+#    #+#             */
-/*   Updated: 2020/12/17 16:17:22 by kdustin          ###   ########.fr       */
+/*   Updated: 2020/12/17 19:13:25 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,10 +38,10 @@ int			enlarge_args(t_sim_cmd *sim_cmd, char *new_arg)
 	int		i;
 	char	**result_args;
 
-	if (!(result_args = (char**)malloc(sizeof(char*) * (sim_cmd->n_args + 2))))
+	if (!(result_args = (char**)malloc(sizeof(char*) * (sim_cmd->argc + 2))))
 		return (-1);
 	i = 0;
-	while (i < sim_cmd->n_args)
+	while (i < sim_cmd->argc)
 	{
 		if (!(result_args[i] = ft_strdup(sim_cmd->args[i])))
 		{
