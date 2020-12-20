@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: kdustin <kdustin@student.42.fr>            +#+  +:+       +#+         #
+#    By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/05/06 16:34:49 by kdustin           #+#    #+#              #
-#    Updated: 2020/09/20 02:28:27 by kdustin          ###   ########.fr        #
+#    Updated: 2020/12/19 16:43:08 by kdustin          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -76,7 +76,7 @@ OBJ_FILES = $(REG_OBJS)
 endif
 
 NAME = libft.a
-CFLAGS = -Wall -Wextra -Werror
+CFLAGS = -Wall -Wextra -Werror -g
 
 all: $(NAME)
 

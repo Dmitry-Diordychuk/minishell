@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/16 17:02:02 by kdustin           #+#    #+#             */
-/*   Updated: 2020/12/17 19:20:37 by kdustin          ###   ########.fr       */
+/*   Updated: 2020/12/20 09:47:23 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,11 @@
 /*
 **	Error handling.
 */
+
+# define NONE 0
+# define SUCCESSED 0
+# define FAILED 1
+# define ALLOCATION_FAILED -1
 
 void error(char *message);
 
@@ -50,5 +55,32 @@ t_sim_cmd				*g_cur_sim_cmd;
 
 void					free_args(char **args);
 int						enlarge_args(t_sim_cmd *sim_cmd, char *new_arg);
+
+/*
+**	Lexer
+*/
+
+# define STRONG_OPEN 256
+# define WEAK_OPEN 257
+# define CLOSE 258
+
+typedef struct	s_token
+{
+	char*		value;
+	int			name;
+}				t_token;
+
+# define SEPARATOR 59
+# define STRONG_QUOTE 39
+# define WEAK_QUOTE 34
+# define LESS 60
+# define GREAT 62
+# define GREATGREAT 63
+# define PIPE 124
+# define LAST_RESULT 37
+# define ENV 36
+# define WORD 127
+
+t_list	*run_lexer(char *input);
 
 #endif

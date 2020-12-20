@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strtrim.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kdustin <kdustin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/05/06 16:57:45 by kdustin           #+#    #+#             */
-/*   Updated: 2020/07/11 19:01:30 by kdustin          ###   ########.fr       */
+/*   Updated: 2020/12/19 17:14:40 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,9 +69,11 @@ char			*ft_strtrim(char const *s1, char const *set)
 		return (NULL);
 	if (gete(s1, set) <= gets(s1, set))
 	{
-		if (!(result = (char*)ft_malloc(sizeof(char), NULL)))
+		if (!(result = (char*)ft_malloc(sizeof(char) * ft_strlen(s1), NULL)))
 			return (NULL);
-		result[0] = '\0';
+		result[0] = *s1;
+		if (*s1 != '\0')
+			result[1] = '\0';
 		return (result);
 	}
 	result = (char*)ft_calloc(gete(s1, set) - gets(s1, set) + 1, sizeof(char));

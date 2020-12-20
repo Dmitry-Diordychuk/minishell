@@ -6,12 +6,12 @@
 #    By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/12/16 13:35:35 by kdustin           #+#    #+#              #
-#    Updated: 2020/12/17 15:59:28 by kdustin          ###   ########.fr        #
+#    Updated: 2020/12/18 06:16:59 by kdustin          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 SRC_DIR := sources
-SRC_SUB_DIR := buildin error execute parser signal tests
+SRC_SUB_DIR := buildin error execute lexer parser signal tests
 OBJ_DIR := objects
 BIN_DIR := .
 INC_DIR := includes
@@ -39,6 +39,8 @@ SRCS_EXECUTE := $(addprefix execute/,	command.c 			\
 										execute_utils.c		\
 										simple_command.c)
 
+SRCS_LEXER := $(addprefix lexer/,		lexer.c)
+
 SRCS_PARSER := $(addprefix parser/, )
 SRCS_SIGNAL := $(addprefix signal/, )
 SRCS_TESTS := $(addprefix tests/,		simple_command_test.c)
@@ -46,6 +48,7 @@ SRCS_TESTS := $(addprefix tests/,		simple_command_test.c)
 SRCS := $(addprefix $(SRC_DIR)/,	$(SRCS_BUILDIN)	\
 									$(SRCS_ERROR)	\
 									$(SRCS_EXECUTE)	\
+									$(SRCS_LEXER)	\
 									$(SRCS_PARSER)	\
 									$(SRCS_SIGNAL)	\
 									main.c)
@@ -86,3 +89,6 @@ simple_command_test: objects/simple_command_test.o objects/simple_command.o obje
 	$(MAKE) -C $(LIBFT_DIR)/ bonus
 	$(CC) $(CFLAGS) $(LDFLAGS) $^ $(LDLIBS) -o simple_command_test
 
+lexer_test: objects/lexer_test.o objects/lexer.o
+	$(MAKE) -C $(LIBFT_DIR)/ bonus
+	$(CC) $(CFLAGS) $(LDFLAGS) $^ $(LDLIBS) -o lexer_test
