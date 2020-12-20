@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/18 06:14:59 by kdustin           #+#    #+#             */
-/*   Updated: 2020/12/19 21:47:06 by kdustin          ###   ########.fr       */
+/*   Updated: 2020/12/20 14:36:12 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,7 @@ int main(void)
 	//result = run_lexer("be'7|\"e9477\'da;;");
 	//result = run_lexer("\"ab\"9\"ab\"4;");
 	//result = run_lexer("\"ab\"9");
-	result = run_lexer("4?|<<64\"5<;9>>9$?a9$\"$");
+	//result = run_lexer("4?|<<64'5<;9>>9$?a9$'$");
 	//result = run_lexer("dsa'das");
 	//result = run_lexer("'\"");
 	//result = run_lexer("'$'");

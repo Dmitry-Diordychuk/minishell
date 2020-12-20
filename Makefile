@@ -6,7 +6,7 @@
 #    By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/12/16 13:35:35 by kdustin           #+#    #+#              #
-#    Updated: 2020/12/18 06:16:59 by kdustin          ###   ########.fr        #
+#    Updated: 2020/12/20 11:26:10 by kdustin          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -39,7 +39,9 @@ SRCS_EXECUTE := $(addprefix execute/,	command.c 			\
 										execute_utils.c		\
 										simple_command.c)
 
-SRCS_LEXER := $(addprefix lexer/,		lexer.c)
+SRCS_LEXER := $(addprefix lexer/,		lexer_utils.c		\
+										lexer.c				\
+										token.c)
 
 SRCS_PARSER := $(addprefix parser/, )
 SRCS_SIGNAL := $(addprefix signal/, )
@@ -89,6 +91,6 @@ simple_command_test: objects/simple_command_test.o objects/simple_command.o obje
 	$(MAKE) -C $(LIBFT_DIR)/ bonus
 	$(CC) $(CFLAGS) $(LDFLAGS) $^ $(LDLIBS) -o simple_command_test
 
-lexer_test: objects/lexer_test.o objects/lexer.o
+lexer_test: objects/lexer_test.o objects/lexer.o objects/token.o objects/lexer_utils.o
 	$(MAKE) -C $(LIBFT_DIR)/ bonus
 	$(CC) $(CFLAGS) $(LDFLAGS) $^ $(LDLIBS) -o lexer_test

@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/16 17:02:02 by kdustin           #+#    #+#             */
-/*   Updated: 2020/12/20 09:47:23 by kdustin          ###   ########.fr       */
+/*   Updated: 2020/12/20 13:17:18 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,6 +70,17 @@ typedef struct	s_token
 	int			name;
 }				t_token;
 
+t_list	*run_lexer(char *input);
+
+/*
+**	token.c
+*/
+
+t_token	*create_token(int name, char *value);
+int		add_token(t_list **tokens, int name, char *value);
+void	delete_token(void *content);
+int		try_add_word_token(t_list **tokens, char **tmp, int quote);
+
 # define SEPARATOR 59
 # define STRONG_QUOTE 39
 # define WEAK_QUOTE 34
@@ -81,6 +92,11 @@ typedef struct	s_token
 # define ENV 36
 # define WORD 127
 
-t_list	*run_lexer(char *input);
+/*
+**	lexer_utils.c
+*/
+
+int	add_letter(char **str, char c);
+int	get_word(char **src, char **dest, int quote);
 
 #endif
