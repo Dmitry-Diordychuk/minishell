@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/20 11:21:49 by kdustin           #+#    #+#             */
-/*   Updated: 2020/12/20 13:20:25 by kdustin          ###   ########.fr       */
+/*   Updated: 2020/12/20 15:51:20 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,11 @@ int	get_word(char **src, char **dest, int quote)
 		}
 		free(*src);
 		*src = NULL;
+		if (**dest == '\0')
+		{
+			free (*dest);
+			return (FAILED);
+		}
 		return (SUCCESSED);
 	}
 	return (FAILED);

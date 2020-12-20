@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/18 06:14:59 by kdustin           #+#    #+#             */
-/*   Updated: 2020/12/20 14:36:12 by kdustin          ###   ########.fr       */
+/*   Updated: 2020/12/20 15:56:37 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,6 +88,19 @@ int main(void)
 	//result = run_lexer("'$'");
 	//result = run_lexer("\"$?\"");
 	//result = run_lexer("Hi ' 42 ' world");
+	//result = run_lexer("a|b|>what cat | hm");  <------
+	//result = run_lexer(";;");
+	//result = run_lexer(";");
+	//result = run_lexer("|");
+	//result = run_lexer("||");
+	//result = run_lexer(";@@;");
+	//result = run_lexer("| |");
+	//result = run_lexer(" ");
+	//result = run_lexer("' '");
+	//result = run_lexer(" ' ' ");
+	//result = run_lexer(" ' \" \" ' ");
+	//result = run_lexer(" \" ' ' \" ");
+	//result = run_lexer("echo $PWD");
 	print_tokens(result);
 	return (0);
 }
