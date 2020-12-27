@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/16 17:02:02 by kdustin           #+#    #+#             */
-/*   Updated: 2020/12/27 12:55:56 by kdustin          ###   ########.fr       */
+/*   Updated: 2020/12/27 20:27:26 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,7 @@ int						enlarge_args(t_sim_cmd *sim_cmd, char *new_arg);
 # define WEAK_OPEN 257
 # define SLASH_OPEN 258
 # define CLOSE 259
+# define ENV_WEAK_OPEN 260
 
 typedef struct	s_token
 {
@@ -93,6 +94,7 @@ int		try_add_word_token(t_list **tokens, char **tmp, int quote);
 # define ENV 36
 # define WORD 127
 # define ERROR 32
+# define BLANK 33
 
 /*
 **	lexer_utils.c

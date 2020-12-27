@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/18 06:14:59 by kdustin           #+#    #+#             */
-/*   Updated: 2020/12/27 13:36:24 by kdustin          ###   ########.fr       */
+/*   Updated: 2020/12/27 23:53:01 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,9 @@ void print_sim_commands(t_list *sim_cmds)
 		ft_putstr_fd("\tArgs: ", 1);
 		while (i < sc->argc)
 		{
+			ft_putstr_fd("\"", 1);
 			ft_putstr_fd(sc->args[i], 1);
+			ft_putstr_fd("\"", 1);
 			ft_putstr_fd(" ", 1);
 			i++;
 		}
@@ -69,7 +71,7 @@ int main(void)
 	t_list	*result;
 	t_list	*commands;
 
-	add_env_var(&g_env_vars, ft_strdup("PWD"), ft_strdup("c:/user"));
+	add_env_var(&g_env_vars, ft_strdup("PWD"), ft_strdup("/Users/diordychukdmitry"));
 	add_env_var(&g_env_vars, ft_strdup("321"), ft_strdup("three-two-one"));
 	add_env_var(&g_env_vars, ft_strdup("fdsgbkldmbklfdsmklfmd"), ft_strdup("trash"));
 	//result = run_lexer("User input");
@@ -120,7 +122,20 @@ int main(void)
 	//result = run_lexer("echo str1'\"str2\"'");
 	//result = run_lexer("echo str1\"'$str2'\"");
 	//result = run_lexer("echo str1'\"$str2\"'");
-	result = run_lexer("echo 'str1'str2\"str3 $PWD str4\" \"str5\"'$PWD' $PWD \"$PWD\"");
+	//result = run_lexer("echo 'str1'str2\"str3 $PWD str4\" \"str5\"'$PWD' $PWD \"$PWD\"");
+	//result = run_lexer("echo \"hello><; word\"");
+	//result = run_lexer("echo $hfkdghldf$PWD");
+	//result = run_lexer("echo '\"\"\"\"'");
+	//result = run_lexer("echo \"\"''\"\"");
+	//result = run_lexer("echo \" '''''' \"");
+	//result = run_lexer("echo \"\"\"\"\"\"\"\"");
+	//result = run_lexer("echo ''''''''");
+	result = run_lexer("echo \"\"\"\"\"\"\"\"\"\"              :\"\"");      //36
+	//result = run_lexer("\\\"");
+	//result = run_lexer("\\'\\'");
+	//result = run_lexer("\"\\'\"");
+	//result = run_lexer("'\\'");
+	//result = run_lexer("a $PWD b");
 	//result = run_lexer(" ");
 	//result = run_lexer("' '");
 	//result = run_lexer(" ' ' ");

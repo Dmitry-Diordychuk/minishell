@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/18 06:06:46 by kdustin           #+#    #+#             */
-/*   Updated: 2020/12/27 13:43:03 by kdustin          ###   ########.fr       */
+/*   Updated: 2020/12/27 21:19:03 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,10 +28,8 @@ int	do_if_quotes(t_list **tokens, char **tmp, char *input,int *quote)
 {
 	int		error;
 
-	if (ft_strchr("'\"", *input) && *quote == SLASH_OPEN)
-		*quote = CLOSE;
-	else if ((((*input == '\'') && (*quote != WEAK_OPEN)) ||
-		((*input == '"') && (*quote != STRONG_OPEN))))
+	if (((*input == '\'') && (*quote != WEAK_OPEN) && (*quote != SLASH_OPEN)) ||
+		((*input == '"') && (*quote != STRONG_OPEN) && (*quote != SLASH_OPEN)))
 	{
 		error = try_add_word_token(tokens, tmp, *quote);
 		if (*input == '\'' && *quote == CLOSE)
@@ -45,11 +43,11 @@ int	do_if_quotes(t_list **tokens, char **tmp, char *input,int *quote)
 			return (ALLOCATION_FAILED);
 		return (TRUE);
 	}
-	else if (*input == '\\' && *quote != STRONG_OPEN)
+	else if (*input == '\\' && *quote != STRONG_OPEN && *quote != SLASH_OPEN)
+	{
 		*quote = SLASH_OPEN;
-	//else if (*input == '\'' && *quote != STRONG_QUOTE)
-	//	if (try_add_word_token(tokens, tmp, *quote) == ALLOCATION_FAILED)
-	//		return (ALLOCATION_FAILED);
+		return (TRUE);
+	}
 	return (FALSE);
 }
 
@@ -57,9 +55,7 @@ int do_if_enviroment(t_list **tokens, char **tmp, char *input, int quote)
 {
 	int		error;
 
-	if (*input == '$' && quote == SLASH_OPEN)
-		quote = CLOSE;
-	else if (*input == '$' && quote != STRONG_OPEN)
+	if (*input == '$' && quote != STRONG_OPEN)
 	{
 		error = try_add_word_token(tokens, tmp, quote);
 		if (*(input + 1) == '?')
@@ -73,15 +69,15 @@ int do_if_enviroment(t_list **tokens, char **tmp, char *input, int quote)
 	return (FALSE);
 }
 
-int	do_if_other(t_list **tokens, char **tmp, char *input, int quote)
+int	do_if_other(t_list **tokens, char **tmp, char *input, int *quote)
 {
-	int		error;
+	int			error;
 
-	if (ft_strchr(";|<>", *input) && quote == STRONG_OPEN)
-		quote = CLOSE;
-	if (ft_strchr(";|<>", *input) && quote == CLOSE)
+	if (ft_strchr(";|<>", *input) && *quote == STRONG_OPEN)
+		*quote = CLOSE;
+	if (strchr(";|<>", *input) && *quote == CLOSE)
 	{
-		error = try_add_word_token(tokens, tmp, quote);
+		error = try_add_word_token(tokens, tmp, *quote);
 		if (*input == '>' && *(input + 1) == '>')
 			error = add_token(tokens, GREATGREAT, NULL);
 		else
@@ -90,9 +86,15 @@ int	do_if_other(t_list **tokens, char **tmp, char *input, int quote)
 			return (ALLOCATION_FAILED);
 		return (TRUE);
 	}
-	else if (*input == ' ' && quote == CLOSE)
-		if (try_add_word_token(tokens, tmp, quote) == ALLOCATION_FAILED)
+	else if (ft_isspace(*input) && *quote == CLOSE)
+	{
+		if (try_add_word_token(tokens, tmp, *quote) == ALLOCATION_FAILED)
 			return (ALLOCATION_FAILED);
+		if (*tokens != NULL)
+			if (((t_token*)ft_lstlast(*tokens)->content)->name != BLANK)
+				if (add_token(tokens, BLANK, NULL) == ALLOCATION_FAILED)
+					return (ALLOCATION_FAILED);
+	}
 	return (FALSE);
 }
 
@@ -117,11 +119,15 @@ t_list *run_lexer(char *input)
 	while (*input != '\0')
 	{
 		if ((error = do_if_quotes(&tokens, &tmp, input, &quote)) ||
-			(error = do_if_other(&tokens, &tmp, input, quote)) ||
+			(error = do_if_other(&tokens, &tmp, input, &quote)) ||
 			(error = do_if_enviroment(&tokens, &tmp, input, quote)))
 			;
-		else if (*input != '\\' || (*input == '\\' && quote != SLASH_OPEN))
+		else
+		{
 			error = add_letter(&tmp, *input);
+			if (quote == SLASH_OPEN)
+				quote = CLOSE;
+		}
 		if (error == ALLOCATION_FAILED)
 			break;
 		input = input + get_token_size(input, quote);
