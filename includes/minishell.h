@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/16 17:02:02 by kdustin           #+#    #+#             */
-/*   Updated: 2020/12/20 13:17:18 by kdustin          ###   ########.fr       */
+/*   Updated: 2020/12/27 12:55:56 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,9 @@ typedef struct			s_sim_cmd
 {
 	int					argc;
 	char				**args;
+	int					is_append;
+	char				*out_file;
+	char				*in_file;
 }						t_sim_cmd;
 
 t_sim_cmd				*create_sim_cmd();
@@ -43,16 +46,14 @@ int						insert_arg(t_sim_cmd *sim_cmd, char *arg);
 typedef struct			s_cmd
 {
 	int					cmdc;
-	t_sim_cmd			*sim_cmds;
-	char				*out_file;
-	char				*in_file;
-	char				*err_file;
-	int					background;
+	t_list				*sim_cmds;
 }						t_cmd;
 
-t_cmd					g_cur_cmd;
+t_cmd					*g_cur_cmd;
 t_sim_cmd				*g_cur_sim_cmd;
 
+int						add_command(t_list **command);
+int						insert_sim_cmd(t_cmd *cmd, t_sim_cmd *sim_cmd);
 void					free_args(char **args);
 int						enlarge_args(t_sim_cmd *sim_cmd, char *new_arg);
 
@@ -62,7 +63,8 @@ int						enlarge_args(t_sim_cmd *sim_cmd, char *new_arg);
 
 # define STRONG_OPEN 256
 # define WEAK_OPEN 257
-# define CLOSE 258
+# define SLASH_OPEN 258
+# define CLOSE 259
 
 typedef struct	s_token
 {
@@ -76,7 +78,6 @@ t_list	*run_lexer(char *input);
 **	token.c
 */
 
-t_token	*create_token(int name, char *value);
 int		add_token(t_list **tokens, int name, char *value);
 void	delete_token(void *content);
 int		try_add_word_token(t_list **tokens, char **tmp, int quote);
@@ -91,6 +92,7 @@ int		try_add_word_token(t_list **tokens, char **tmp, int quote);
 # define LAST_RESULT 37
 # define ENV 36
 # define WORD 127
+# define ERROR 32
 
 /*
 **	lexer_utils.c
@@ -98,5 +100,27 @@ int		try_add_word_token(t_list **tokens, char **tmp, int quote);
 
 int	add_letter(char **str, char c);
 int	get_word(char **src, char **dest, int quote);
+
+/*
+**	Parser
+*/
+
+t_list *run_parser(t_list *tokens);
+
+/*
+**	Enviroment
+*/
+
+typedef struct	s_env_var
+{
+	char		*name;
+	char		*value;
+}				t_env_var;
+
+t_list			*g_env_vars;
+int				g_last_result;
+
+int				add_env_var(t_list **env_vars, char *name, char *value);
+char			*find_env_var(t_list *env_vars, char *name);
 
 #endif

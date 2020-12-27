@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/20 11:21:49 by kdustin           #+#    #+#             */
-/*   Updated: 2020/12/20 15:51:20 by kdustin          ###   ########.fr       */
+/*   Updated: 2020/12/27 12:45:45 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,15 +42,11 @@ int	get_word(char **src, char **dest, int quote)
 	if (*src != NULL)
 	{
 		if (quote != CLOSE)
-		{
 			if (!(*dest = ft_strdup(*src)))
 				return (ALLOCATION_FAILED);
-		}
-		else
-		{
+		if (quote == CLOSE)
 			if (!(*dest = ft_strtrim(*src, " ")))
 				return (ALLOCATION_FAILED);
-		}
 		free(*src);
 		*src = NULL;
 		if (**dest == '\0')
