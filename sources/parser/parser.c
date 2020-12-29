@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/20 17:33:31 by kdustin           #+#    #+#             */
-/*   Updated: 2020/12/27 23:26:12 by kdustin          ###   ########.fr       */
+/*   Updated: 2020/12/29 11:20:57 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,7 +111,7 @@ char *find_and_concat(char *str)
 	char *s2;
 
 	p = str;
-	while (*p != '\0' && *p != ' ' && *p != '"' && *p != '\'')
+	while (*p != '\0' && *p != ' ' && *p != '"' && *p != '\'' && *p != '=' && *p != '\\')
 		p++;
 	tmp = *p;
 	if (*p != '\0')
@@ -127,6 +127,10 @@ char *find_and_concat(char *str)
 		s2 = joinfree(s2, ft_strdup("\""));
 	else if (tmp == '\'')
 		s2 = joinfree(s2, ft_strdup("'"));
+	else if (tmp == '=')
+		s2 = joinfree(s2, ft_strdup("="));
+	else if (tmp == '\\')
+		s2 = joinfree(s2, ft_strdup(""));
 	if (s2 == NULL || !(p = ft_strjoin(s2, p)))
 		return (NULL);
 	free(s2);
@@ -138,7 +142,9 @@ char *get_str_by_type(t_token *token, int type)
 	char *res;
 
 	res = NULL;
-	if (type == WORD)
+	if (token == NULL && type == ENV)
+		res = ft_strdup("$");
+	else if (type == WORD)
 		res = ft_strdup(token->value);
 	else if (type == STRONG_QUOTE || type == WEAK_QUOTE)
 		res = ft_strdup("");
@@ -157,12 +163,16 @@ int	build_word(t_list **tokens, char **word)
 	t_token	*token;
 	int		type;
 
+	token = NULL;
 	type = peek_token(*tokens);
 	if (type == ENV)
+	{
+		while ((type = peek_token(*tokens)) == ENV)
+			free(pop_token(tokens));
 		type = ENV;
-	if (type == ENV)
-		free(pop_token(tokens));
-	token = pop_token(tokens);
+	}
+	if (*tokens != NULL)
+		token = pop_token(tokens);
 	if (*word == NULL)
 	{
 		*word = get_str_by_type(token, type);
@@ -180,36 +190,52 @@ int	build_word(t_list **tokens, char **word)
 	return (SUCCESSED);
 }
 
-int	io_file(t_list **tokens, t_sim_cmd **sim_cmd)
-{
-	int		tmp;
-	char	*res;
-
-	res = NULL;
-	while ((tmp = peek_token(*tokens)) == BLANK)
-		free(pop_token(tokens));
-	if (tmp == GREATGREAT || tmp == GREAT || tmp == LESS)
-	{
-		free(pop_token(tokens));
-		if (build_word(tokens, &res) == ALLOCATION_FAILED)
-				return (ALLOCATION_FAILED);
-		if (tmp == LESS)
-			(*sim_cmd)->in_file = res;
-		else if (tmp == GREATGREAT || tmp == GREAT)
-			(*sim_cmd)->out_file = res;
-		if (tmp == GREATGREAT)
-			(*sim_cmd)->is_append = 1;
-		return (SUCCESSED);
-	}
-	return (FAILED);
-}
-
 int	check_if_word(int type)
 {
 	if (type == WORD || type == ENV || type == LAST_RESULT ||
 		type == STRONG_QUOTE || type == WEAK_QUOTE)
 		return (TRUE);
 	return (FALSE);
+}
+
+int check_if_io(int type)
+{
+	if (type == LESS || type == GREAT || type == GREATGREAT)
+		return (TRUE);
+	return (FALSE);
+}
+
+int	io_file(t_list **tokens, t_sim_cmd **sim_cmd)
+{
+	char	*tmp;
+	int		peek;
+
+	tmp = NULL;
+	while ((peek = peek_token(*tokens)) == BLANK)
+		free(pop_token(tokens));
+	if (check_if_io(peek))
+	{
+		free(pop_token(tokens));
+		while (peek_token(*tokens) == BLANK)
+			free(pop_token(tokens));
+		while (*tokens != NULL && peek_token(*tokens) != BLANK && peek_token(*tokens) != SEPARATOR && peek_token(*tokens) != PIPE)
+			build_word(tokens, &tmp);
+		if (peek == LESS)
+		{
+			if (!((*sim_cmd)->in_file = ft_strdup(tmp)))
+				return (ALLOCATION_FAILED);
+		}
+		else if (peek == GREATGREAT || peek == GREAT)
+			if (!((*sim_cmd)->out_file = ft_strdup(tmp)))
+				return (ALLOCATION_FAILED);
+		if (peek == GREATGREAT)
+			(*sim_cmd)->is_append = 1;
+		if (*tokens != NULL && peek_token(*tokens) != SEPARATOR && peek_token(*tokens) != PIPE)
+			free(pop_token(tokens));
+		free(tmp);
+		return (SUCCESSED);
+	}
+	return (FAILED);
 }
 
 int	cmd_suffix(t_list **tokens, t_sim_cmd **sim_cmd)
@@ -225,14 +251,14 @@ int	cmd_suffix(t_list **tokens, t_sim_cmd **sim_cmd)
 	{
 		while (check_if_word(peek_token(*tokens)))
 		{
-			while (*tokens != NULL && peek_token(*tokens) != BLANK)
+			while (*tokens != NULL && peek_token(*tokens) != BLANK && peek_token(*tokens) != SEPARATOR && peek_token(*tokens) != PIPE && !check_if_io(peek_token(*tokens)))
 				build_word(tokens, &tmp);
 			if (insert_arg(*sim_cmd, tmp) == ALLOCATION_FAILED)
 			{
 				free(tmp);
 				return (ALLOCATION_FAILED);
 			}
-			if (*tokens != NULL)
+			if (*tokens != NULL && peek_token(*tokens) != PIPE && peek_token(*tokens) != SEPARATOR && !check_if_io(peek_token(*tokens)))
 				free(pop_token(tokens));
 			free(tmp);
 			tmp = NULL;
@@ -253,7 +279,6 @@ int	cmd_prefix(t_list **tokens, t_sim_cmd **sim_cmd)
 
 int	command(t_list **tokens, t_list **cmds)
 {
-	int			peek;
 	t_sim_cmd	*sim_cmd;
 	char		*tmp;
 
@@ -263,7 +288,15 @@ int	command(t_list **tokens, t_list **cmds)
 		return (ERROR);
 	if (check_if_word(peek_token(*tokens)))
 	{
-		build_word(tokens, &tmp);
+		while (*tokens != NULL && peek_token(*tokens) != BLANK && peek_token(*tokens) != SEPARATOR && peek_token(*tokens) != PIPE)
+		{
+			if (peek_token(*tokens) == STRONG_QUOTE && peek_token(*tokens) == WEAK_QUOTE)
+			{
+				free(pop_token(tokens));
+				continue;
+			}
+			build_word(tokens, &tmp);
+		}
 		if (insert_arg(sim_cmd, tmp) == ALLOCATION_FAILED)
 		{
 			free(tmp);
@@ -273,8 +306,9 @@ int	command(t_list **tokens, t_list **cmds)
 		if (peek_token(*tokens) == BLANK)
 		{
 			free(pop_token(tokens));
-			if (cmd_suffix(tokens, &sim_cmd) == ERROR)
-				return (ERROR);
+			while (check_if_word(peek_token(*tokens)) || check_if_io(peek_token(*tokens)))
+				if (cmd_suffix(tokens, &sim_cmd) == ERROR)
+					return (ERROR);
 		}
 	}
 	insert_sim_cmd((t_cmd*)((*cmds)->content), sim_cmd);
@@ -285,7 +319,8 @@ int	pipe_sequence(t_list **tokens, t_list **cmds)
 {
 	int	peek;
 
-	peek = peek_token(*tokens);
+	while ((peek = peek_token(*tokens)) == BLANK)
+		free(pop_token(tokens));
 	if (peek == PIPE)
 	{
 		free(pop_token(tokens));
@@ -298,8 +333,9 @@ int	pipe_sequence(t_list **tokens, t_list **cmds)
 	{
 		if (command(tokens, cmds) == ERROR)
 			return (ERROR);
-		if (pipe_sequence(tokens, cmds) == ERROR)
-			return (ERROR);
+		if (peek_token(*tokens) == PIPE)
+			if (pipe_sequence(tokens, cmds) == ERROR)
+				return (ERROR);
 	}
 	return (SUCCESSED);
 }

@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/16 17:02:02 by kdustin           #+#    #+#             */
-/*   Updated: 2020/12/27 20:27:26 by kdustin          ###   ########.fr       */
+/*   Updated: 2020/12/28 16:38:48 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,8 +64,9 @@ int						enlarge_args(t_sim_cmd *sim_cmd, char *new_arg);
 # define STRONG_OPEN 256
 # define WEAK_OPEN 257
 # define SLASH_OPEN 258
-# define CLOSE 259
-# define ENV_WEAK_OPEN 260
+# define SLASH_WEAK_OPEN 259
+# define CLOSE 260
+# define ENV_WEAK_OPEN 261
 
 typedef struct	s_token
 {
