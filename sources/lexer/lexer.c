@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/18 06:06:46 by kdustin           #+#    #+#             */
-/*   Updated: 2020/12/29 22:37:09 by kdustin          ###   ########.fr       */
+/*   Updated: 2020/12/30 17:41:50 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,6 @@ t_list *lexer_error_handler(t_list **tokens, char **tmp, int error)
 		return (NULL);
 	}
 	free(*tmp);
-	//*tmp = NULL;
 	return (*tokens);
 }
 

@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/16 17:02:02 by kdustin           #+#    #+#             */
-/*   Updated: 2020/12/30 12:35:58 by kdustin          ###   ########.fr       */
+/*   Updated: 2020/12/30 17:57:45 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,5 +130,7 @@ int				g_last_result;
 int				add_env_var(t_list **env_vars, char *name, char *value);
 char			*find_env_var(t_list *env_vars, char *name);
 char **list_to_array(t_list *list);
+
+#define ONLYFREE 512
 
 #endif

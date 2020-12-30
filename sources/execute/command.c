@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/17 11:18:59 by kdustin           #+#    #+#             */
-/*   Updated: 2020/12/30 16:42:45 by kdustin          ###   ########.fr       */
+/*   Updated: 2020/12/30 18:43:15 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,10 +34,6 @@ int add_command(t_list **commands)
 		free(new_cmd);
 		return (ALLOCATION_FAILED);
 	}
-	//if (*commands == NULL)
-	//	*commands = new_elem;
-	//else
-	//	ft_lstadd_front(commands, new_elem);
 	ft_lstpush(commands, new_elem);
 	return (SUCCESSED);
 }
@@ -76,21 +72,21 @@ char *extend_path(char *filename)
 	return (ft_strdup(path));
 }
 
-int execbuildin(char *program)
+int execbuildin(int argc, char **argv, char **envs)
 {
-	if (!ft_strcmp(program, "echo"))
+	if (!ft_strcmp(argv[0], "echo"))
 		return (1);
-	else if (!ft_strcmp(program, "cd"))
+	else if (!ft_strcmp(argv[0], "cd"))
 		return (1);
-	else if (!ft_strcmp(program, "pwd"))
+	else if (!ft_strcmp(argv[0], "pwd"))
 		return (1);
-	else if (!ft_strcmp(program, "export"))
+	else if (!ft_strcmp(argv[0], "export"))
 		return (1);
-	else if (!ft_strcmp(program, "unset"))
+	else if (!ft_strcmp(argv[0], "unset"))
 		return (1);
-	else if (!ft_strcmp(program, "env"))
+	else if (!ft_strcmp(argv[0], "env"))
 		return (1);
-	else if (!ft_strcmp(program, "exit"))
+	else if (!ft_strcmp(argv[0], "exit"))
 		return (1);
 	return (0);
 }
@@ -136,15 +132,15 @@ int		execute(t_cmd *command)
 		pid = fork();
 		if (pid == 0)
 		{
-			// Дочерний процесс здесь
-			if (execbuildin(sim->args[0]))
+			char **envs = list_to_array(g_env_vars);
+			if (execbuildin(sim->argc, sim->args, envs))
 				printf("buildin\n");
 			else
 			{
 				printf("program\n");
 				if (!(path = extend_path(sim->args[0])))
 					return (ALLOCATION_FAILED);
-				execve(path, sim->args, list_to_array(g_env_vars));
+				execve(path, sim->args, envs);
 				perror(path);
 				free(path);
 			}
