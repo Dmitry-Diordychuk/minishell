@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/18 06:14:59 by kdustin           #+#    #+#             */
-/*   Updated: 2020/12/29 11:22:31 by kdustin          ###   ########.fr       */
+/*   Updated: 2020/12/30 14:28:36 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -226,7 +226,11 @@ int main(void)
 	//result = run_lexer("a|b|>what cat | hm");
 	result = run_lexer("a;b;>what cat ; hm");
 	commands = run_parser(result);
-	ft_putstr_fd("\n", 1);
 	print_commands(commands);
+	while (commands != NULL)
+	{
+		execute(commands->content);
+		commands = commands->next;
+	}
 	return (0);
 }

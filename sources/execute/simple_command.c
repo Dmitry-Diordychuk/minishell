@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/17 06:32:13 by kdustin           #+#    #+#             */
-/*   Updated: 2020/12/26 21:20:07 by kdustin          ###   ########.fr       */
+/*   Updated: 2020/12/29 19:18:51 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,22 @@ t_sim_cmd	*create_sim_cmd(void)
 	new_sim_cmd->in_file = NULL;
 	new_sim_cmd->is_append = 0;
 	return (new_sim_cmd);
+}
+
+void	delete_sim_command(void *content)
+{
+	t_sim_cmd	*sim;
+	int			i;
+
+	i = 0;
+	while (i < sim->argc)
+	{
+		free(sim->args[i]);
+		i++;
+	}
+	free(sim->args);
+	free(sim->in_file);
+	free(sim->out_file);
 }
 
 /*

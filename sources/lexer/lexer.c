@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/18 06:06:46 by kdustin           #+#    #+#             */
-/*   Updated: 2020/12/28 21:53:23 by kdustin          ###   ########.fr       */
+/*   Updated: 2020/12/29 22:37:09 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,10 +21,11 @@ t_list *lexer_error_handler(t_list **tokens, char **tmp, int error)
 		return (NULL);
 	}
 	free(*tmp);
+	//*tmp = NULL;
 	return (*tokens);
 }
 
-int	do_if_quotes(t_list **tokens, char **tmp, char *input,int *quote)
+int	do_if_quotes(t_list **tokens, char **tmp, const char *input,int *quote)
 {
 	int		error;
 
@@ -53,7 +54,7 @@ int	do_if_quotes(t_list **tokens, char **tmp, char *input,int *quote)
 	return (FALSE);
 }
 
-int do_if_enviroment(t_list **tokens, char **tmp, char *input, int quote)
+int do_if_enviroment(t_list **tokens, char **tmp, const char *input, int quote)
 {
 	int		error;
 
@@ -71,7 +72,7 @@ int do_if_enviroment(t_list **tokens, char **tmp, char *input, int quote)
 	return (FALSE);
 }
 
-int	do_if_other(t_list **tokens, char **tmp, char *input, int *quote)
+int	do_if_other(t_list **tokens, char **tmp, const char *input, int *quote)
 {
 	int			error;
 
@@ -99,7 +100,7 @@ int	do_if_other(t_list **tokens, char **tmp, char *input, int *quote)
 	return (FALSE);
 }
 
-int	get_token_size(char *input, int quote)
+int	get_token_size(const char *input, int quote)
 {
 	if ((((*input == '$') && (*(input + 1) == '?')) && quote != STRONG_OPEN) ||
 		(((*input == '>') && (*(input + 1) == '>')) && quote == CLOSE))
@@ -107,7 +108,7 @@ int	get_token_size(char *input, int quote)
 	return (1);
 }
 
-t_list *run_lexer(char *input)
+t_list *run_lexer(const char *input)
 {
 	t_list	*tokens;
 	char	*tmp;
@@ -115,6 +116,8 @@ t_list *run_lexer(char *input)
 	int		error;
 	int		prev_quote;
 
+	if (input == NULL)
+		return (NULL);
 	tokens = NULL;
 	tmp = NULL;
 	quote = CLOSE;
@@ -132,7 +135,7 @@ t_list *run_lexer(char *input)
 				break;
 			if (tmp == NULL && *input == ' ')
 				if (add_token(&tokens, WORD, ft_strdup("")) == ALLOCATION_FAILED)
-					return (ALLOCATION_FAILED);
+					return (NULL);
 			error = add_token(&tokens, BLANK, NULL);
 			quote = prev_quote;
 		}

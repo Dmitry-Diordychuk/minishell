@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/16 17:02:02 by kdustin           #+#    #+#             */
-/*   Updated: 2020/12/28 16:38:48 by kdustin          ###   ########.fr       */
+/*   Updated: 2020/12/30 12:35:58 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,8 @@
 
 # include "libft.h"
 # include <stdlib.h>
+# include <fcntl.h>
+# include <errno.h>
 
 /*
 **	Error handling.
@@ -41,11 +43,11 @@ typedef struct			s_sim_cmd
 }						t_sim_cmd;
 
 t_sim_cmd				*create_sim_cmd();
+void					delete_sim_command(void *content);
 int						insert_arg(t_sim_cmd *sim_cmd, char *arg);
 
 typedef struct			s_cmd
 {
-	int					cmdc;
 	t_list				*sim_cmds;
 }						t_cmd;
 
@@ -53,9 +55,11 @@ t_cmd					*g_cur_cmd;
 t_sim_cmd				*g_cur_sim_cmd;
 
 int						add_command(t_list **command);
+void					delete_command(void *content);
 int						insert_sim_cmd(t_cmd *cmd, t_sim_cmd *sim_cmd);
 void					free_args(char **args);
 int						enlarge_args(t_sim_cmd *sim_cmd, char *new_arg);
+int						execute(t_cmd *command);
 
 /*
 **	Lexer
@@ -74,7 +78,7 @@ typedef struct	s_token
 	int			name;
 }				t_token;
 
-t_list	*run_lexer(char *input);
+t_list	*run_lexer(const char *input);
 
 /*
 **	token.c
@@ -125,5 +129,6 @@ int				g_last_result;
 
 int				add_env_var(t_list **env_vars, char *name, char *value);
 char			*find_env_var(t_list *env_vars, char *name);
+char **list_to_array(t_list *list);
 
 #endif

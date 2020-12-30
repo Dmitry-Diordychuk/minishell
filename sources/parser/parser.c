@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/20 17:33:31 by kdustin           #+#    #+#             */
-/*   Updated: 2020/12/29 11:20:57 by kdustin          ###   ########.fr       */
+/*   Updated: 2020/12/30 13:03:30 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,7 @@ t_token *pop_token(t_list **tokens)
 	t_list	*tmp;
 
 	ret = (t_token*)((*tokens)->content);
-	print_token(ret);
+	//print_token(ret);
 	if(*tokens != NULL)
 	{
 		tmp = (*tokens)->next;
@@ -311,7 +311,7 @@ int	command(t_list **tokens, t_list **cmds)
 					return (ERROR);
 		}
 	}
-	insert_sim_cmd((t_cmd*)((*cmds)->content), sim_cmd);
+	insert_sim_cmd((t_cmd*)(ft_lstlast(*cmds)->content), sim_cmd);
 	return (SUCCESSED);
 }
 

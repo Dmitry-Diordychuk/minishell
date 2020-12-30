@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/20 11:17:03 by kdustin           #+#    #+#             */
-/*   Updated: 2020/12/28 21:48:45 by kdustin          ###   ########.fr       */
+/*   Updated: 2020/12/29 22:01:43 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,10 +44,9 @@ void delete_token(void *content)
 	t_token *t;
 
 	t = (t_token*)content;
-	free(t->value);
+	if (t != NULL)
+		free(t->value);
 	free(t);
-	t->value = NULL;
-	t = NULL;
 }
 
 int try_add_word_token(t_list **tokens, char **tmp, int quote)
@@ -55,6 +54,7 @@ int try_add_word_token(t_list **tokens, char **tmp, int quote)
 	int		get_world_result;
 	char	*value;
 
+	value = NULL;
 	if ((get_world_result = get_word(tmp, &value, quote)) == ALLOCATION_FAILED)
 		return (ALLOCATION_FAILED);
 	if (get_world_result == SUCCESSED)

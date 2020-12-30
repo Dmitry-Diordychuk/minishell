@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/20 22:27:20 by kdustin           #+#    #+#             */
-/*   Updated: 2020/12/27 13:11:46 by kdustin          ###   ########.fr       */
+/*   Updated: 2020/12/29 17:15:37 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,4 +54,44 @@ char *find_env_var(t_list *env_vars, char *name)
 		return (NULL);
 	var = (t_env_var*)(tmp->content);
 	return (var->value);
+}
+
+void *env_free_handler(char **res, char *tmp, int len)
+{
+	int i;
+
+	i = 0;
+	while (i < len)
+	{
+		free(res[i]);
+	}
+	free(res);
+	free(tmp);
+	return (NULL);
+}
+
+char **list_to_array(t_list *list)
+{
+	t_env_var	*env;
+	char		*tmp;
+	char		*str;
+	char		**res;
+	int			i;
+
+	i = 0;
+	tmp = NULL;
+	if (!(res = (char**)calloc(sizeof(char*), (ft_lstsize(list) + 1))))
+	while (list != NULL)
+	{
+		env = (t_env_var*)list->content;
+		if (!(tmp = ft_strjoin(env->name, "=")))
+			return (env_free_handler(res, tmp, i));
+		if (!(str = ft_strjoin(tmp, env->value)))
+			return (env_free_handler(res, tmp, i));
+		free(tmp);
+		res[i] = str;
+		list = list->next;
+		i++;
+	}
+	return (res);
 }
