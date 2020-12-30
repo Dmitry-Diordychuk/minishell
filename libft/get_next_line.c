@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kdustin <kdustin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/11 15:28:44 by kdustin           #+#    #+#             */
-/*   Updated: 2020/09/12 19:38:33 by kdustin          ###   ########.fr       */
+/*   Updated: 2020/12/30 23:02:13 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,8 +27,10 @@ int			get_next_line(int fd, char **line)
 
 	buf[0] = '\0';
 	counter = 1;
-	while (!strchr(data, '\n') && (counter = read(fd, buf, BUFFER_SIZE)) > 0)
+	while (!strchr(data, '\n') && (counter = read(fd, buf, BUFFER_SIZE)) >= 0)
 	{
+		if (data == NULL && counter == 0)
+			break;
 		if (!(data = data_add(data, buf, counter)))
 			return (handle_error(&data));
 	}

@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/16 17:02:09 by kdustin           #+#    #+#             */
-/*   Updated: 2020/12/30 18:44:14 by kdustin          ###   ########.fr       */
+/*   Updated: 2020/12/30 23:07:50 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,6 +49,11 @@ int main(void)
 	ft_putstr_fd("minishell$ ", 1);
 	while ((gnl_ret = get_next_line(1, &input)) >= 0)
 	{
+		if (*input == '\0')
+		{
+			ft_putstr_fd("exit\n", 1);
+			exit(free_handler(&input, NULL, NULL, 0));
+		}
 		if (!(tokens = run_lexer(input)))
 			return (free_handler(&input, &tokens, NULL, ALLOCATION_FAILED));
 		if (!(commands = run_parser(tokens)))
