@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/16 17:02:09 by kdustin           #+#    #+#             */
-/*   Updated: 2020/12/30 23:07:50 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/01/01 20:47:08 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,17 +38,64 @@ int	free_handler(char **input, t_list **tokens, t_list **commands, int return_co
 	return (return_code);
 }
 
-int main(void)
+void signal_handler(int sig)
+{
+	if (sig == SIGINT)
+	{
+		ft_putstr_fd("\b\b  ", 2);
+		ft_putstr_fd("\nminishell$ ", 2);
+		signal(SIGINT, signal_handler);
+	}
+	if (sig == SIGQUIT)
+	{
+		ft_putstr_fd("  \b\b", 2);
+	}
+}
+
+int get_envs_from_envp(char **envp)
+{
+	int		i;
+	int		j;
+	char	**split;
+
+	i = 0;
+	g_env_vars = NULL;
+	while (envp[i] != NULL)
+	{
+		printf("%s\n", envp[i]);
+		if (!(split = ft_split(envp[i], '=')))
+		{
+			printf("%s\n", split[0]);
+			return (ALLOCATION_FAILED);
+		}
+		add_env_var(&g_env_vars, split[0], split[1]);
+		j = 0;
+		while (split[j] != NULL)
+			free(split[j++]);
+		free(split);
+		i++;
+	}
+	return (SUCCESSED);
+}
+
+int main(int argc, char **argv, char **envp)
 {
 	int		gnl_ret;
 	char	*input;
 	t_list	*tokens;
 	t_list	*commands;
 
+	if (get_envs_from_envp(envp) == ALLOCATION_FAILED)
+		return (free_handler(NULL, NULL, NULL, -1));
 	input = NULL;
 	ft_putstr_fd("minishell$ ", 1);
-	while ((gnl_ret = get_next_line(1, &input)) >= 0)
+	signal(SIGINT, signal_handler);
+	signal(SIGQUIT, signal_handler);
+	while (1)
 	{
+		gnl_ret = get_next_line(1, &input);
+		signal(SIGINT, signal_handler);
+		signal(SIGQUIT, signal_handler);
 		if (*input == '\0')
 		{
 			ft_putstr_fd("exit\n", 1);

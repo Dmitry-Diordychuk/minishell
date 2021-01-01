@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/17 11:18:59 by kdustin           #+#    #+#             */
-/*   Updated: 2020/12/30 18:43:15 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/01/01 15:01:44 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -141,7 +141,7 @@ int		execute(t_cmd *command)
 				if (!(path = extend_path(sim->args[0])))
 					return (ALLOCATION_FAILED);
 				execve(path, sim->args, envs);
-				perror(path);
+				printf("minishell: %s: command not found\n", sim->args[0]);
 				free(path);
 			}
 			exit(1);
