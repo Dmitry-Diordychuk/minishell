@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/20 17:33:31 by kdustin           #+#    #+#             */
-/*   Updated: 2020/12/30 13:03:30 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/01/02 00:21:36 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,7 +116,8 @@ char *find_and_concat(char *str)
 	tmp = *p;
 	if (*p != '\0')
 		*p++ = '\0';
-	s2 = find_env_var(g_env_vars, str);
+	if (find_env_var(g_env_vars, str, &s2) == ALLOCATION_FAILED)
+		return (NULL);
 	if (s2 != NULL)
 		s2 = ft_strdup(s2);
 	else

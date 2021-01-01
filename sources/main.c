@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/16 17:02:09 by kdustin           #+#    #+#             */
-/*   Updated: 2021/01/01 20:47:08 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/01/02 01:30:43 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ int	free_handler(char **input, t_list **tokens, t_list **commands, int return_co
 {
 	if (input != NULL)
 	{
-		free(*input);
+		//free(*input);
 		*input = NULL;
 	}
 	if (tokens != NULL)
@@ -62,10 +62,8 @@ int get_envs_from_envp(char **envp)
 	g_env_vars = NULL;
 	while (envp[i] != NULL)
 	{
-		printf("%s\n", envp[i]);
 		if (!(split = ft_split(envp[i], '=')))
 		{
-			printf("%s\n", split[0]);
 			return (ALLOCATION_FAILED);
 		}
 		add_env_var(&g_env_vars, split[0], split[1]);

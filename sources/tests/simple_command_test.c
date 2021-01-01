@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/17 07:14:15 by kdustin           #+#    #+#             */
-/*   Updated: 2020/12/17 19:14:21 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/01/01 21:50:26 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,6 @@ int	main(void)
 	insert_arg(sim_cmd, "test1");
 	insert_arg(sim_cmd, "test2");
 	insert_arg(sim_cmd, "test3");
-	print_arg(sim_cmd->args);
+	print_arg(sim_cmd->argv);
 	return (0);
 }

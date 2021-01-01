@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/17 11:18:59 by kdustin           #+#    #+#             */
-/*   Updated: 2021/01/01 15:01:44 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/01/02 01:34:43 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,9 +120,7 @@ int		execute(t_cmd *command)
 		{
 			pipe(fdpipe);
 			fdin = fdpipe[0];
-			printf("fdpipe in: %d\n", fdpipe[0]);
 			fdout = fdpipe[1];
-			printf("fdpipe out: %d\n", fdpipe[1]);
 		}
 		dup2(fdin, 0);
 		close(fdin);
@@ -132,23 +130,24 @@ int		execute(t_cmd *command)
 		pid = fork();
 		if (pid == 0)
 		{
-			char **envs = list_to_array(g_env_vars);
-			if (execbuildin(sim->argc, sim->args, envs))
-				printf("buildin\n");
+			for (int i = 0; i < sim->argc; i++)
+				printf("<%s>\n", sim->argv[i]);
+			if (execbuildin(sim->argc, sim->argv, g_env_vars))
+				;
 			else
 			{
-				printf("program\n");
-				if (!(path = extend_path(sim->args[0])))
-					return (ALLOCATION_FAILED);
-				execve(path, sim->args, envs);
-				printf("minishell: %s: command not found\n", sim->args[0]);
+				if (!(path = extend_path(sim->argv[0])))
+					exit(ALLOCATION_FAILED);
+				execve(path, sim->argv, g_env_vars);
+				ft_putstr_fd("minishell: ", 1);
+				ft_putstr_fd(sim->argv[0], 1);
+				ft_putstr_fd(": command not found\n", 1);
 				free(path);
 			}
 			exit(1);
 		}
 		dup2(tmpin, 0);
 		dup2(tmpout, 1);
-		printf("HERE\n");
 		command->sim_cmds = command->sim_cmds->next;
 	}
 	close(tmpin);

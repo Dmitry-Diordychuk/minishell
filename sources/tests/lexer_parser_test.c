@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/18 06:14:59 by kdustin           #+#    #+#             */
-/*   Updated: 2020/12/30 14:28:36 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/01/01 21:50:48 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ void print_sim_commands(t_list *sim_cmds)
 		while (i < sc->argc)
 		{
 			//ft_putstr_fd("\"", 1);
-			ft_putstr_fd(sc->args[i], 1);
+			ft_putstr_fd(sc->argv[i], 1);
 			//ft_putstr_fd("\"", 1);
 			ft_putstr_fd(" ", 1);
 			i++;

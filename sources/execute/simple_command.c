@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/17 06:32:13 by kdustin           #+#    #+#             */
-/*   Updated: 2020/12/29 19:18:51 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/01/02 00:36:58 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ t_sim_cmd	*create_sim_cmd(void)
 	if (!(new_sim_cmd = (t_sim_cmd*)malloc(sizeof(t_sim_cmd))))
 		return (NULL);
 	new_sim_cmd->argc = 0;
-	new_sim_cmd->args = NULL;
+	new_sim_cmd->argv = NULL;
 	new_sim_cmd->out_file = NULL;
 	new_sim_cmd->in_file = NULL;
 	new_sim_cmd->is_append = 0;
@@ -39,10 +39,10 @@ void	delete_sim_command(void *content)
 	i = 0;
 	while (i < sim->argc)
 	{
-		free(sim->args[i]);
+		free(sim->argv[i]);
 		i++;
 	}
-	free(sim->args);
+	free(sim->argv);
 	free(sim->in_file);
 	free(sim->out_file);
 }
@@ -55,27 +55,29 @@ void	delete_sim_command(void *content)
 int			insert_arg(t_sim_cmd *sim_cmd, char *arg)
 {
 	char *arg_dup;
+	char **tmp;
 
 	if (!(arg_dup = ft_strdup(arg)))
 		return (ALLOCATION_FAILED);
-	if (sim_cmd->args == NULL)
+	if (sim_cmd->argv == NULL)
 	{
-		if (!(sim_cmd->args = (char**)malloc(sizeof(char*) * 2)))
+		if (!(sim_cmd->argv = (char**)ft_calloc(sizeof(char*), 2)))
 		{
 			free(arg_dup);
 			return (ALLOCATION_FAILED);
 		}
-		sim_cmd->args[0] = arg_dup;
-		sim_cmd->args[1] = NULL;
+		sim_cmd->argv[0] = arg_dup;
 	}
-	else
+	else if (!(tmp = enlarge(sim_cmd->argc, sim_cmd->argv, arg_dup)))
 	{
-		if (enlarge_args(sim_cmd, arg_dup))
-		{
-			free(arg_dup);
-			return (ALLOCATION_FAILED);
-		}
+		free(arg_dup);
+		return (ALLOCATION_FAILED);
 	}
 	sim_cmd->argc++;
+	if (sim_cmd->argc > 1)
+	{
+		free_array(sim_cmd->argv);
+		sim_cmd->argv = tmp;
+	}
 	return (0);
 }

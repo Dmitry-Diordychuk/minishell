@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/16 17:02:02 by kdustin           #+#    #+#             */
-/*   Updated: 2020/12/30 17:57:45 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/01/02 01:30:09 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ void error(char *message);
 typedef struct			s_sim_cmd
 {
 	int					argc;
-	char				**args;
+	char				**argv;
 	int					is_append;
 	char				*out_file;
 	char				*in_file;
@@ -57,8 +57,9 @@ t_sim_cmd				*g_cur_sim_cmd;
 int						add_command(t_list **command);
 void					delete_command(void *content);
 int						insert_sim_cmd(t_cmd *cmd, t_sim_cmd *sim_cmd);
-void					free_args(char **args);
-int						enlarge_args(t_sim_cmd *sim_cmd, char *new_arg);
+void					free_array(char **args);
+char					**enlarge(int len, char **a, char *new_arg);
+int						array_len(char **a);
 int						execute(t_cmd *command);
 
 /*
@@ -124,12 +125,11 @@ typedef struct	s_env_var
 	char		*value;
 }				t_env_var;
 
-t_list			*g_env_vars;
+char			**g_env_vars;
 int				g_last_result;
 
-int				add_env_var(t_list **env_vars, char *name, char *value);
-char			*find_env_var(t_list *env_vars, char *name);
-char **list_to_array(t_list *list);
+int				add_env_var(char ***envs, char *name, char *value);
+int				find_env_var(char **envp, char *name, char **result);
 
 #define ONLYFREE 512
 

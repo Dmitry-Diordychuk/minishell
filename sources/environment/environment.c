@@ -6,92 +6,64 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/20 22:27:20 by kdustin           #+#    #+#             */
-/*   Updated: 2020/12/29 17:15:37 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/01/02 01:27:53 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-t_env_var *create_env_var(char *name, char *value)
+int add_env_var(char ***envs, char *name, char *value)
 {
-	t_env_var *new_var;
+	char *join;
+	char *left;
+	char **tmp;
 
-	if (!(new_var = (t_env_var*)malloc(sizeof(t_env_var))))
-		return (NULL);
-	new_var->name = name;
-	new_var->value = value;
-	return (new_var);
-}
-
-int add_env_var(t_list **env_vars, char *name, char *value)
-{
-	t_env_var	*new_var;
-	t_list		*new_elem;
-
-	if (!(new_var = create_env_var(name, value)))
+	if (!(left = ft_strjoin(name, "=")))
 		return (ALLOCATION_FAILED);
-	if (!(new_elem = ft_lstnew((void*)new_var)))
+	if (!(join = ft_strjoin(left, value)))
 	{
-		free(new_var);
+		free(left);
 		return (ALLOCATION_FAILED);
 	}
-	ft_lstpush(env_vars, new_elem);
+	free(left);
+	if (*envs == NULL)
+	{
+		*envs = (char**)ft_calloc(2, sizeof(char*));
+		*envs[0] = join;
+	}
+	else
+	{
+		if (!(tmp = enlarge(array_len(*envs), *envs, join)))
+		{
+			free(join);
+			return (ALLOCATION_FAILED);
+		}
+		free_array(*envs);
+		*envs = tmp;
+	}
 	return (SUCCESSED);
 }
 
-int env_var_cmp(void *a, void *b)
+int	find_env_var(char **envp, char *name, char **result)
 {
-	return (ft_strcmp((char*)a, ((t_env_var*)b)->name));
-}
-
-char *find_env_var(t_list *env_vars, char *name)
-{
-	t_env_var	*var;
-	t_list		*tmp;
-
-	tmp = ft_lstfind(env_vars, name, env_var_cmp);
-	if (tmp == NULL)
-		return (NULL);
-	var = (t_env_var*)(tmp->content);
-	return (var->value);
-}
-
-void *env_free_handler(char **res, char *tmp, int len)
-{
-	int i;
+	int		i;
+	char	**split;
 
 	i = 0;
-	while (i < len)
+	while (envp[i] != NULL)
 	{
-		free(res[i]);
-	}
-	free(res);
-	free(tmp);
-	return (NULL);
-}
-
-char **list_to_array(t_list *list)
-{
-	t_env_var	*env;
-	char		*tmp;
-	char		*str;
-	char		**res;
-	int			i;
-
-	i = 0;
-	tmp = NULL;
-	if (!(res = (char**)calloc(sizeof(char*), (ft_lstsize(list) + 1))))
-	while (list != NULL)
-	{
-		env = (t_env_var*)list->content;
-		if (!(tmp = ft_strjoin(env->name, "=")))
-			return (env_free_handler(res, tmp, i));
-		if (!(str = ft_strjoin(tmp, env->value)))
-			return (env_free_handler(res, tmp, i));
-		free(tmp);
-		res[i] = str;
-		list = list->next;
+		if (!(split = ft_split(envp[i], '=')))
+			return (ALLOCATION_FAILED);
+		if (ft_strcmp(split[0], name) == 0)
+		{
+			free(split[0]);
+			free(split[2]);
+			free(split);
+			*result = split[1];
+			return (SUCCESSED);
+		}
+		free_array(split);
 		i++;
 	}
-	return (res);
+	return (FAILED);
 }
