@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
+/*   By: kdustin <kdustin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/16 17:02:09 by kdustin           #+#    #+#             */
-/*   Updated: 2021/01/02 01:30:43 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/01/03 23:13:58 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,7 +103,6 @@ int main(int argc, char **argv, char **envp)
 			return (free_handler(&input, &tokens, NULL, ALLOCATION_FAILED));
 		if (!(commands = run_parser(tokens)))
 			return (free_handler(&input, &tokens, &commands, ALLOCATION_FAILED));
-		ft_putstr_fd("\n", 1);
 		while (commands != NULL)
 		{
 			if (execute(commands->content) == ALLOCATION_FAILED)

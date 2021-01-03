@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   command.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
+/*   By: kdustin <kdustin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/17 11:18:59 by kdustin           #+#    #+#             */
-/*   Updated: 2021/01/02 01:34:43 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/01/03 23:42:43 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,13 +56,11 @@ int		insert_sim_cmd(t_cmd *cmd, t_sim_cmd *sim_cmd)
 	return (0);
 }
 
-char *extend_path(char *filename)
+char *extend_path(char *filename, char *path)
 {
-	char buf[100];
-	char *path;
 	char *tmp;
 
-	if (!(tmp = ft_strjoin(getcwd(buf, 100), "/")))
+	if (!(tmp = ft_strjoin(path, "/")))
 		return (NULL);
 	if (!(path = ft_strjoin(tmp, filename)))
 	{
@@ -91,6 +89,42 @@ int execbuildin(int argc, char **argv, char **envs)
 	return (0);
 }
 
+int	execute_related(t_sim_cmd *sim)
+{
+	char	*paths;
+	char	**split;
+	int		i;
+	char	*fullpath;
+
+	if (find_env_var(g_env_vars, "PATH", &paths) == ALLOCATION_FAILED)
+		return (ALLOCATION_FAILED);
+	if (!(split = ft_split(paths, ':')))
+	{
+		free(paths);
+		return (ALLOCATION_FAILED);
+	}
+	free(paths);
+	i = 0;
+	while (split[i] != NULL)
+	{
+		if (!(fullpath = extend_path(sim->argv[0], split[i])))
+		{
+			free_array(split);
+			return(ALLOCATION_FAILED);
+		}
+		if (execve(fullpath, sim->argv, g_env_vars) >= 0)
+		{
+			free_array(split);
+			free(fullpath);
+			return (1);
+		}
+		free(fullpath);
+		i++;
+	}
+	free_array(split);
+	return (0);
+}
+
 int		execute(t_cmd *command)
 {
 	const int	tmpin = dup(0);
@@ -101,6 +135,8 @@ int		execute(t_cmd *command)
 	t_sim_cmd	*sim;
 	char		*path;
 	int			fdpipe[2];
+	int			ex;
+	char		buf[100];
 
 	while (command->sim_cmds != NULL)
 	{
@@ -130,28 +166,35 @@ int		execute(t_cmd *command)
 		pid = fork();
 		if (pid == 0)
 		{
-			for (int i = 0; i < sim->argc; i++)
-				printf("<%s>\n", sim->argv[i]);
+
 			if (execbuildin(sim->argc, sim->argv, g_env_vars))
 				;
 			else
 			{
-				if (!(path = extend_path(sim->argv[0])))
-					exit(ALLOCATION_FAILED);
-				execve(path, sim->argv, g_env_vars);
-				ft_putstr_fd("minishell: ", 1);
-				ft_putstr_fd(sim->argv[0], 1);
-				ft_putstr_fd(": command not found\n", 1);
-				free(path);
+				if (!ft_strchr(sim->argv[0], '/'))
+				{
+					if ((ex = execute_related(sim)) < 0)
+						exit(ALLOCATION_FAILED);
+				}
+				else if (*(sim->argv[0]) == '.')
+				{
+					if (!(path = extend_path(sim->argv[0], getcwd(buf, 100))))
+						exit(ALLOCATION_FAILED);
+					execve(path, sim->argv, g_env_vars);
+					free(path);
+				}
+				ft_putstr_fd("minishell: ", 2);
+				ft_putstr_fd(sim->argv[0], 2);
+				ft_putstr_fd(": command not found\n", 2);
 			}
 			exit(1);
 		}
 		dup2(tmpin, 0);
 		dup2(tmpout, 1);
+		waitpid(pid, NULL, WUNTRACED);
 		command->sim_cmds = command->sim_cmds->next;
 	}
 	close(tmpin);
 	close(tmpout);
-	waitpid(pid, NULL, WUNTRACED);
 	return (SUCCESSED);
 }
