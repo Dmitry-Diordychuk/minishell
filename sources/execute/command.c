@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/17 11:18:59 by kdustin           #+#    #+#             */
-/*   Updated: 2021/01/03 23:42:43 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/01/04 23:04:43 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -138,35 +138,38 @@ int		execute(t_cmd *command)
 	int			ex;
 	char		buf[100];
 
+	int flag = 0;
+	int tmp_in = tmpin;
+
 	while (command->sim_cmds != NULL)
 	{
 		sim = (t_sim_cmd*)command->sim_cmds->content;
-		if (sim->in_file)
-			fdin = open(sim->in_file, O_RDONLY);
-		else
-			fdin = dup(tmpin);
 		if (command->sim_cmds->next == NULL)
 		{
-			if (sim->out_file)
-				fdout = open(sim->out_file, O_RDWR);
-			else
-				fdout = dup(tmpout);
+			// Last
+			dprintf(2, "Last\n");
+			dup2(tmp_in, 0);
+			close(tmp_in);
+			fdout = dup(tmpout);
+			dup2(fdout, 1);
+			close(fdout);
 		}
 		else
 		{
+			dprintf(2, "Else\n");
 			pipe(fdpipe);
 			fdin = fdpipe[0];
 			fdout = fdpipe[1];
+			dup2(tmp_in, 0);
+			close(tmp_in);
+			dup2(fdout, 1);
+			close(fdout);
+			tmp_in = fdin;
 		}
-		dup2(fdin, 0);
-		close(fdin);
-		dup2(fdout, 1);
-		close(fdout);
-
+		dprintf(2, "Here\n");
 		pid = fork();
 		if (pid == 0)
 		{
-
 			if (execbuildin(sim->argc, sim->argv, g_env_vars))
 				;
 			else
@@ -189,12 +192,12 @@ int		execute(t_cmd *command)
 			}
 			exit(1);
 		}
-		dup2(tmpin, 0);
-		dup2(tmpout, 1);
-		waitpid(pid, NULL, WUNTRACED);
 		command->sim_cmds = command->sim_cmds->next;
 	}
+	dup2(tmpin, 0);
+	dup2(tmpout, 1);
 	close(tmpin);
 	close(tmpout);
+	waitpid(WAIT_ANY, NULL, WUNTRACED);
 	return (SUCCESSED);
 }
