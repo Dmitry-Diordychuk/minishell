@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kdustin <kdustin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: che <che@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/16 17:02:02 by kdustin           #+#    #+#             */
-/*   Updated: 2021/01/03 22:03:07 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/01/04 23:53:36 by che              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,6 +116,16 @@ int	get_word(char **src, char **dest, int quote);
 */
 
 t_list *run_parser(t_list *tokens);
+
+/*
+**	Buldin
+*/
+
+int		ft_echo (char **arg);
+void	ft_exit(char **arg, int argc);
+int		ft_pwd(char **args);
+int		g_exit;
+
 
 /*
 **	Enviroment

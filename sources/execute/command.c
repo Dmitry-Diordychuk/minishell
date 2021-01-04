@@ -3,14 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   command.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kdustin <kdustin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: che <che@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/17 11:18:59 by kdustin           #+#    #+#             */
-/*   Updated: 2021/01/04 23:04:43 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/01/04 23:54:17 by che              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+#include <stdio.h>
 
 t_cmd	*create_cmd()
 {
@@ -73,11 +74,17 @@ char *extend_path(char *filename, char *path)
 int execbuildin(int argc, char **argv, char **envs)
 {
 	if (!ft_strcmp(argv[0], "echo"))
+	{
+		ft_echo(argv);
 		return (1);
+	}
 	else if (!ft_strcmp(argv[0], "cd"))
 		return (1);
 	else if (!ft_strcmp(argv[0], "pwd"))
+	{
+		ft_pwd(argv);
 		return (1);
+	}
 	else if (!ft_strcmp(argv[0], "export"))
 		return (1);
 	else if (!ft_strcmp(argv[0], "unset"))
@@ -85,7 +92,10 @@ int execbuildin(int argc, char **argv, char **envs)
 	else if (!ft_strcmp(argv[0], "env"))
 		return (1);
 	else if (!ft_strcmp(argv[0], "exit"))
-		return (1);
+	{
+		ft_exit(argv, argc);
+		return (2);
+	}
 	return (0);
 }
 
@@ -147,7 +157,7 @@ int		execute(t_cmd *command)
 		if (command->sim_cmds->next == NULL)
 		{
 			// Last
-			dprintf(2, "Last\n");
+			//dprintf(2, "Last\n");
 			dup2(tmp_in, 0);
 			close(tmp_in);
 			fdout = dup(tmpout);
@@ -156,7 +166,7 @@ int		execute(t_cmd *command)
 		}
 		else
 		{
-			dprintf(2, "Else\n");
+			//dprintf(2, "Else\n");
 			pipe(fdpipe);
 			fdin = fdpipe[0];
 			fdout = fdpipe[1];
@@ -166,12 +176,12 @@ int		execute(t_cmd *command)
 			close(fdout);
 			tmp_in = fdin;
 		}
-		dprintf(2, "Here\n");
+		//dprintf(2, "Here\n");
 		pid = fork();
 		if (pid == 0)
 		{
 			if (execbuildin(sim->argc, sim->argv, g_env_vars))
-				;
+				printf("---------BLDIN\n");
 			else
 			{
 				if (!ft_strchr(sim->argv[0], '/'))
