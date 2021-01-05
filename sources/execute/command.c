@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/17 11:18:59 by kdustin           #+#    #+#             */
-/*   Updated: 2021/01/05 23:10:08 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/01/05 23:43:12 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -160,7 +160,10 @@ int		execute(t_cmd *command)
 	last_in_file = 0;
 	append = 0;
 	if (!ft_strcmp(sim->argv[0], "exit") && command->sim_cmds->next == NULL)
+	{
+		ft_putstr_fd("exit\n", 1);
 		exit(1);
+	}
 	while (command->sim_cmds != NULL)
 	{
 		sim = (t_sim_cmd*)command->sim_cmds->content;
@@ -243,7 +246,7 @@ int		execute(t_cmd *command)
 	dup2(tmpout, 1);
 	close(tmpin);
 	close(tmpout);
- 	int status;
+	int status;
 	if (waitpid(pid, &status, 0) == -1)
 	{
 		perror("waitpid failed");

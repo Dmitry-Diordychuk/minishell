@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/16 17:02:09 by kdustin           #+#    #+#             */
-/*   Updated: 2021/01/05 20:24:34 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/01/05 23:52:01 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,11 @@ int	free_handler(char **input, t_list **tokens, t_list **commands, int return_co
 {
 	if (input != NULL)
 	{
-		//free(*input);
-		*input = NULL;
+		if (*input != NULL)
+		{
+			free(*input);
+			*input = NULL;
+		}
 	}
 	if (tokens != NULL)
 	{
@@ -47,7 +50,7 @@ void signal_handler(int sig)
 		signal(SIGINT, signal_handler);
 	}
 	if (sig == SIGQUIT)
-		ft_putstr_fd("\b\b  \b\b", 2);
+		ft_putstr_fd("\b\b  \b\b", 1);
 }
 
 int get_envs_from_envp(char **envp)
@@ -89,11 +92,6 @@ int main(int argc, char **argv, char **envp)
 	signal(SIGQUIT, signal_handler);
 	while ((gnl_ret = get_next_line(1, &input)))
 	{
-		if (gnl_ret == 0)
-		{
-			ft_putstr_fd("exit\n", 1);
-			exit(0);
-		}
 		signal(SIGINT, signal_handler);
 		signal(SIGQUIT, signal_handler);
 		if ((tokens = run_lexer(input)) < 0)
@@ -111,5 +109,6 @@ int main(int argc, char **argv, char **envp)
 		free_handler(&input, NULL, &commands, ONLYFREE);
 		ft_putstr_fd("minishell$ ", 1);
 	}
-	return (free_handler(&input, &tokens, &commands, SUCCESSED));
+	ft_putstr_fd("exit\n", 1);
+	return (free_handler(&input, NULL, NULL, SUCCESSED));
 }
