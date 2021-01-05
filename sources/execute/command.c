@@ -6,7 +6,7 @@
 /*   By: che <che@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/17 11:18:59 by kdustin           #+#    #+#             */
-/*   Updated: 2021/01/04 23:54:17 by che              ###   ########.fr       */
+/*   Updated: 2021/01/05 03:11:51 by che              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,7 +90,10 @@ int execbuildin(int argc, char **argv, char **envs)
 	else if (!ft_strcmp(argv[0], "unset"))
 		return (1);
 	else if (!ft_strcmp(argv[0], "env"))
+	{
+		ft_env();
 		return (1);
+	}
 	else if (!ft_strcmp(argv[0], "exit"))
 	{
 		ft_exit(argv, argc);
@@ -151,6 +154,9 @@ int		execute(t_cmd *command)
 	int flag = 0;
 	int tmp_in = tmpin;
 
+	sim = (t_sim_cmd*)command->sim_cmds->content;
+	if (!ft_strcmp(sim->argv[0], "exit") && command->sim_cmds->next == NULL)
+		exit(1);
 	while (command->sim_cmds != NULL)
 	{
 		sim = (t_sim_cmd*)command->sim_cmds->content;
@@ -181,7 +187,9 @@ int		execute(t_cmd *command)
 		if (pid == 0)
 		{
 			if (execbuildin(sim->argc, sim->argv, g_env_vars))
+			{
 				printf("---------BLDIN\n");
+			}
 			else
 			{
 				if (!ft_strchr(sim->argv[0], '/'))
@@ -200,7 +208,7 @@ int		execute(t_cmd *command)
 				ft_putstr_fd(sim->argv[0], 2);
 				ft_putstr_fd(": command not found\n", 2);
 			}
-			exit(1);
+			exit(g_last_result);
 		}
 		command->sim_cmds = command->sim_cmds->next;
 	}
@@ -208,6 +216,15 @@ int		execute(t_cmd *command)
 	dup2(tmpout, 1);
 	close(tmpin);
 	close(tmpout);
-	waitpid(WAIT_ANY, NULL, WUNTRACED);
+ 	int status;
+	if (waitpid(pid, &status, 0) == -1)
+	{
+	        perror("waitpid failed");
+	        return -1;
+	}
+	if (WIFEXITED(status))
+	{
+	        g_last_result = WEXITSTATUS(status);
+	}
 	return (SUCCESSED);
 }

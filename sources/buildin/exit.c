@@ -6,7 +6,7 @@
 /*   By: che <che@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/17 05:25:47 by kdustin           #+#    #+#             */
-/*   Updated: 2021/01/02 23:03:44 by che              ###   ########.fr       */
+/*   Updated: 2021/01/05 03:02:43 by che              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,11 +45,4 @@ void		ft_exit(char **arg, int argc)
     }
     else if (argc == 2)
         g_last_result = ft_atoi(arg[1]);
-    // while (arg[i])
-    // {
-	// 	free(arg[i]);
-    //     i++;
-    // }
-    // free(arg);
-    // (void)arg;
 }

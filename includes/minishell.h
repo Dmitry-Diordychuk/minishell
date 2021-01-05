@@ -6,7 +6,7 @@
 /*   By: che <che@student.42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/16 17:02:02 by kdustin           #+#    #+#             */
-/*   Updated: 2021/01/04 23:53:36 by che              ###   ########.fr       */
+/*   Updated: 2021/01/05 03:03:38 by che              ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,6 +124,7 @@ t_list *run_parser(t_list *tokens);
 int		ft_echo (char **arg);
 void	ft_exit(char **arg, int argc);
 int		ft_pwd(char **args);
+int		ft_env(void);
 int		g_exit;
 
 
