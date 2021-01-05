@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/20 17:33:31 by kdustin           #+#    #+#             */
-/*   Updated: 2021/01/02 00:21:36 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/01/05 13:30:57 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -374,12 +374,10 @@ int	complete_command(t_list **tokens, t_list **cmds)
 	return (SUCCESSED);
 }
 
-t_list *run_parser(t_list *tokens)
+int run_parser(t_list *tokens, t_list **result)
 {
-	t_list	*cmds;
-
-	cmds = NULL;
-	if (complete_command(&tokens, &cmds) == ERROR)
-		return (NULL);
-	return (cmds);
+	*result = NULL;
+	if (complete_command(&tokens, result) == ERROR)
+		return (ALLOCATION_FAILED);
+	return (SUCCESSED);
 }

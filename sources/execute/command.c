@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   command.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: che <che@student.42.fr>                    +#+  +:+       +#+        */
+/*   By: kdustin <kdustin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/17 11:18:59 by kdustin           #+#    #+#             */
-/*   Updated: 2021/01/04 23:54:17 by che              ###   ########.fr       */
+/*   Updated: 2021/01/05 14:02:16 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -209,5 +209,6 @@ int		execute(t_cmd *command)
 	close(tmpin);
 	close(tmpout);
 	waitpid(WAIT_ANY, NULL, WUNTRACED);
+
 	return (SUCCESSED);
 }
