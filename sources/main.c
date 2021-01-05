@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/16 17:02:09 by kdustin           #+#    #+#             */
-/*   Updated: 2021/01/04 23:06:35 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/01/05 14:05:01 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,15 +40,17 @@ int	free_handler(char **input, t_list **tokens, t_list **commands, int return_co
 
 void signal_handler(int sig)
 {
+	printf("Signal\n");
 	if (sig == SIGINT)
 	{
-		ft_putstr_fd("\b\b  ", 2);
-		ft_putstr_fd("\nminishell$ ", 2);
+		ft_putstr_fd("\b\b  ", 1);
+		ft_putstr_fd("1minishell$ ", 1);
 		signal(SIGINT, signal_handler);
 	}
 	if (sig == SIGQUIT)
 	{
 		ft_putstr_fd("  \b\b", 2);
+		exit(1);
 	}
 }
 
@@ -86,7 +88,7 @@ int main(int argc, char **argv, char **envp)
 	if (get_envs_from_envp(envp) == ALLOCATION_FAILED)
 		return (free_handler(NULL, NULL, NULL, -1));
 	input = NULL;
-	ft_putstr_fd("minishell$ ", 1);
+	ft_putstr_fd("2minishell$ ", 1);
 	signal(SIGINT, signal_handler);
 	signal(SIGQUIT, signal_handler);
 	while (1)
@@ -94,23 +96,24 @@ int main(int argc, char **argv, char **envp)
 		gnl_ret = get_next_line(1, &input);
 		signal(SIGINT, signal_handler);
 		signal(SIGQUIT, signal_handler);
-		if (*input == '\0')
+
+		if ((tokens = run_lexer(input)) < 0)
 		{
-			ft_putstr_fd("exit\n", 1);
-			exit(free_handler(&input, NULL, NULL, 0));
-		}
-		if (!(tokens = run_lexer(input)))
 			return (free_handler(&input, &tokens, NULL, ALLOCATION_FAILED));
-		if (!(commands = run_parser(tokens)))
+		}
+
+		if ((run_parser(tokens, &commands)) < 0)
 			return (free_handler(&input, &tokens, &commands, ALLOCATION_FAILED));
+
 		while (commands != NULL)
 		{
 			if (execute(commands->content) == ALLOCATION_FAILED)
 				return (free_handler(&input, &tokens, &commands, -1));
 			commands = commands->next;
 		}
+
 		free_handler(&input, NULL, &commands, ONLYFREE);
-		ft_putstr_fd("minishell$ ", 1);
+		ft_putstr_fd("3minishell$ ", 1);
 	}
 	return (free_handler(&input, &tokens, &commands, SUCCESSED));
 }
