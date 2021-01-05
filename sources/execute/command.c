@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/17 11:18:59 by kdustin           #+#    #+#             */
-/*   Updated: 2021/01/05 14:24:30 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/01/05 23:10:08 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -142,6 +142,9 @@ int		execute(t_cmd *command)
 {
 	const int	tmpin = dup(0);
 	const int	tmpout = dup(1);
+	int			first_out_file;
+	int			last_in_file;
+	int			append;
 	int			fdin;
 	int			fdout;
 	pid_t		pid;
@@ -150,29 +153,52 @@ int		execute(t_cmd *command)
 	int			fdpipe[2];
 	int			ex;
 	char		buf[100];
-
-	int flag = 0;
-	int tmp_in = tmpin;
+	int			tmp_in;
 
 	sim = (t_sim_cmd*)command->sim_cmds->content;
+	first_out_file = 0;
+	last_in_file = 0;
+	append = 0;
 	if (!ft_strcmp(sim->argv[0], "exit") && command->sim_cmds->next == NULL)
 		exit(1);
 	while (command->sim_cmds != NULL)
 	{
 		sim = (t_sim_cmd*)command->sim_cmds->content;
+		if (sim->in_file != NULL)
+			last_in_file = open(extend_path(sim->in_file, getcwd(buf, 100)), O_CREAT | O_RDWR, S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH);
 		if (command->sim_cmds->next == NULL)
 		{
-			// Last
-			//dprintf(2, "Last\n");
-			dup2(tmp_in, 0);
+			if (last_in_file > 0)
+			{
+				dup2(last_in_file, 0);
+				close(last_in_file);
+			}
+			else
+				dup2(tmp_in, 0);
 			close(tmp_in);
-			fdout = dup(tmpout);
+			if (first_out_file > 0)
+				fdout = first_out_file;
+			else if (sim->out_file != NULL)
+			{
+				if (sim->is_append)
+					fdout = open(extend_path(sim->out_file, getcwd(buf, 100)), O_APPEND | O_RDWR, S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH);
+				else
+					fdout = open(extend_path(sim->out_file, getcwd(buf, 100)), O_CREAT | O_RDWR, S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH);
+			}
+			else
+				fdout = dup(tmpout);
 			dup2(fdout, 1);
 			close(fdout);
 		}
 		else
 		{
-			//dprintf(2, "Else\n");
+			if (first_out_file == 0 && sim->out_file != NULL)
+			{
+				if (sim->is_append)
+					first_out_file = open(extend_path(sim->out_file, getcwd(buf, 100)), O_APPEND | O_RDWR, S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH);
+				else
+					first_out_file = open(extend_path(sim->out_file, getcwd(buf, 100)), O_CREAT | O_RDWR, S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH);
+			}
 			pipe(fdpipe);
 			fdin = fdpipe[0];
 			fdout = fdpipe[1];
@@ -182,13 +208,14 @@ int		execute(t_cmd *command)
 			close(fdout);
 			tmp_in = fdin;
 		}
-		//dprintf(2, "Here\n");
 		pid = fork();
 		if (pid == 0)
 		{
+			signal(SIGINT, SIG_DFL);
+			signal(SIGQUIT, SIG_DFL);
 			if (execbuildin(sim->argc, sim->argv, g_env_vars))
 			{
-				printf("---------BLDIN\n");
+				;
 			}
 			else
 			{
@@ -219,12 +246,12 @@ int		execute(t_cmd *command)
  	int status;
 	if (waitpid(pid, &status, 0) == -1)
 	{
-	        perror("waitpid failed");
-	        return -1;
+		perror("waitpid failed");
+		return -1;
 	}
 	if (WIFEXITED(status))
 	{
-	        g_last_result = WEXITSTATUS(status);
+		g_last_result = WEXITSTATUS(status);
 	}
 	return (SUCCESSED);
 }

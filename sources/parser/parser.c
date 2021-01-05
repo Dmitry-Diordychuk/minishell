@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
+/*   By: kdustin <kdustin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/20 17:33:31 by kdustin           #+#    #+#             */
-/*   Updated: 2021/01/05 13:30:57 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/01/05 23:01:06 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -210,6 +210,7 @@ int	io_file(t_list **tokens, t_sim_cmd **sim_cmd)
 {
 	char	*tmp;
 	int		peek;
+	char	buf[100];
 
 	tmp = NULL;
 	while ((peek = peek_token(*tokens)) == BLANK)
@@ -227,8 +228,11 @@ int	io_file(t_list **tokens, t_sim_cmd **sim_cmd)
 				return (ALLOCATION_FAILED);
 		}
 		else if (peek == GREATGREAT || peek == GREAT)
+		{
 			if (!((*sim_cmd)->out_file = ft_strdup(tmp)))
 				return (ALLOCATION_FAILED);
+			open(extend_path(tmp, getcwd(buf, 100)), O_CREAT | O_RDWR, S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH);
+		}
 		if (peek == GREATGREAT)
 			(*sim_cmd)->is_append = 1;
 		if (*tokens != NULL && peek_token(*tokens) != SEPARATOR && peek_token(*tokens) != PIPE)

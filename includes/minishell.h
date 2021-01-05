@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/16 17:02:02 by kdustin           #+#    #+#             */
-/*   Updated: 2021/01/05 14:21:18 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/01/05 23:00:19 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -145,5 +145,7 @@ int				add_env_var(char ***envs, char *name, char *value);
 int				find_env_var(char **envp, char *name, char **result);
 
 #define ONLYFREE 512
+
+char *extend_path(char *filename, char *path);
 
 #endif
