@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/16 17:02:02 by kdustin           #+#    #+#             */
-/*   Updated: 2021/01/05 23:00:19 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/01/06 16:57:52 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -140,6 +140,7 @@ typedef struct	s_env_var
 
 char			**g_env_vars;
 int				g_last_result;
+pid_t			g_pid;
 
 int				add_env_var(char ***envs, char *name, char *value);
 int				find_env_var(char **envp, char *name, char **result);
@@ -147,5 +148,7 @@ int				find_env_var(char **envp, char *name, char **result);
 #define ONLYFREE 512
 
 char *extend_path(char *filename, char *path);
+
+void signal_handler(int sig);
 
 #endif

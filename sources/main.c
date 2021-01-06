@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/16 17:02:09 by kdustin           #+#    #+#             */
-/*   Updated: 2021/01/05 23:52:01 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/01/06 17:03:36 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,12 +45,13 @@ void signal_handler(int sig)
 {
 	if (sig == SIGINT)
 	{
-		ft_putstr_fd("\b\b  \n", 1);
-		ft_putstr_fd("minishell$ ", 1);
-		signal(SIGINT, signal_handler);
+		ft_putstr_fd("\b\b  ", 2);
+		ft_putstr_fd("\n1minishell$ ", 2);
 	}
 	if (sig == SIGQUIT)
-		ft_putstr_fd("\b\b  \b\b", 1);
+	{
+		ft_putstr_fd("\b\b  \b\b", 2);
+	}
 }
 
 int get_envs_from_envp(char **envp)
@@ -88,12 +89,11 @@ int main(int argc, char **argv, char **envp)
 		return (free_handler(NULL, NULL, NULL, -1));
 	input = NULL;
 	ft_putstr_fd("minishell$ ", 1);
+	g_pid = -1;
 	signal(SIGINT, signal_handler);
 	signal(SIGQUIT, signal_handler);
 	while ((gnl_ret = get_next_line(1, &input)))
 	{
-		signal(SIGINT, signal_handler);
-		signal(SIGQUIT, signal_handler);
 		if ((tokens = run_lexer(input)) < 0)
 		{
 			return (free_handler(&input, &tokens, NULL, ALLOCATION_FAILED));

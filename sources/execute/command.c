@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/17 11:18:59 by kdustin           #+#    #+#             */
-/*   Updated: 2021/01/05 23:43:12 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/01/06 17:01:36 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,12 +102,50 @@ int execbuildin(int argc, char **argv, char **envs)
 	return (0);
 }
 
-int	execute_related(t_sim_cmd *sim)
+void execute_error(int execve_ret, char *name)
+{
+	DIR	*dir;
+
+	ft_putstr_fd("minishell: ", 2);
+	ft_putstr_fd(name, 2);
+	if((dir = opendir(name)) && ft_strchr(name, '/'))
+	{
+		ft_putstr_fd(": is a directory\n", 2);
+		closedir(dir);
+	}
+	else if (errno == EACCES)
+		ft_putstr_fd(": Permission denied\n", 2);
+	else if (errno == E2BIG)
+		ft_putstr_fd(": Argument list too long\n", 2);
+	else if (errno == EFAULT)
+		ft_putstr_fd(": Bad address\n", 2);
+	else if (errno == EIO)
+		ft_putstr_fd(": Remote I/O error\n", 2);
+	else if (errno == ELOOP)
+		ft_putstr_fd(": Too many levels of symbolic links\n", 2);
+	else if (errno == ENAMETOOLONG)
+		ft_putstr_fd(": File name too long\n", 2);
+	else if (errno == ENOENT && ft_strchr(name, '/'))
+		ft_putstr_fd(": No such file or directory\n", 2);
+	else if (errno == ENOEXEC)
+		ft_putstr_fd(": Exec format error\n", 2);
+	else if (errno == ENOMEM)
+		ft_putstr_fd(": Cannot allocate memory\n", 2);
+	else if (errno == ENOTDIR)
+		ft_putstr_fd(": Not a directory\n", 2);
+	else if (errno == ETXTBSY)
+		ft_putstr_fd(": Text file busy\n", 2);
+	else
+		ft_putstr_fd(": command not found\n", 2);
+}
+
+int	execute_program(t_sim_cmd *sim)
 {
 	char	*paths;
 	char	**split;
 	int		i;
-	char	*fullpath;
+	char	*fullname;
+	int		res;
 
 	if (find_env_var(g_env_vars, "PATH", &paths) == ALLOCATION_FAILED)
 		return (ALLOCATION_FAILED);
@@ -120,20 +158,16 @@ int	execute_related(t_sim_cmd *sim)
 	i = 0;
 	while (split[i] != NULL)
 	{
-		if (!(fullpath = extend_path(sim->argv[0], split[i])))
+		if (!(fullname = extend_path(sim->argv[0], split[i])))
 		{
 			free_array(split);
 			return(ALLOCATION_FAILED);
 		}
-		if (execve(fullpath, sim->argv, g_env_vars) >= 0)
-		{
-			free_array(split);
-			free(fullpath);
-			return (1);
-		}
-		free(fullpath);
+		res = execve(fullname, sim->argv, g_env_vars);
+		free(fullname);
 		i++;
 	}
+	execute_error(res, sim->argv[0]);
 	free_array(split);
 	return (0);
 }
@@ -147,7 +181,6 @@ int		execute(t_cmd *command)
 	int			append;
 	int			fdin;
 	int			fdout;
-	pid_t		pid;
 	t_sim_cmd	*sim;
 	char		*path;
 	int			fdpipe[2];
@@ -211,11 +244,9 @@ int		execute(t_cmd *command)
 			close(fdout);
 			tmp_in = fdin;
 		}
-		pid = fork();
-		if (pid == 0)
+		g_pid = fork();
+		if (g_pid == 0)
 		{
-			signal(SIGINT, SIG_DFL);
-			signal(SIGQUIT, SIG_DFL);
 			if (execbuildin(sim->argc, sim->argv, g_env_vars))
 			{
 				;
@@ -224,19 +255,16 @@ int		execute(t_cmd *command)
 			{
 				if (!ft_strchr(sim->argv[0], '/'))
 				{
-					if ((ex = execute_related(sim)) < 0)
+					if ((ex = execute_program(sim)) < 0)
 						exit(ALLOCATION_FAILED);
 				}
-				else if (*(sim->argv[0]) == '.')
+				else
 				{
 					if (!(path = extend_path(sim->argv[0], getcwd(buf, 100))))
 						exit(ALLOCATION_FAILED);
-					execve(path, sim->argv, g_env_vars);
+					execute_error(execve(path, sim->argv, g_env_vars), sim->argv[0]);
 					free(path);
 				}
-				ft_putstr_fd("minishell: ", 2);
-				ft_putstr_fd(sim->argv[0], 2);
-				ft_putstr_fd(": command not found\n", 2);
 			}
 			exit(g_last_result);
 		}
@@ -247,14 +275,22 @@ int		execute(t_cmd *command)
 	close(tmpin);
 	close(tmpout);
 	int status;
-	if (waitpid(pid, &status, 0) == -1)
+	if (waitpid(g_pid, &status, 0) == -1)
 	{
-		perror("waitpid failed");
+		perror("waitpid failed\n");
 		return -1;
 	}
 	if (WIFEXITED(status))
 	{
 		g_last_result = WEXITSTATUS(status);
+	}
+	int sig;
+	if (WIFSIGNALED(status))
+	{
+		if (WTERMSIG(status) == SIGINT)
+		{
+			ft_putstr_fd("TEST\n", 2);
+		}
 	}
 	return (SUCCESSED);
 }
