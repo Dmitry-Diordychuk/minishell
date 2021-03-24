@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/05/11 14:45:53 by kdustin           #+#    #+#             */
-/*   Updated: 2020/07/11 18:58:08 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/03/16 16:30:07 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,21 +51,22 @@ char		*ft_itoa(int n)
 	i = 0;
 	input = n;
 	if (!(result = (char*)ft_calloc(getlen(n) + isngtive(n) + 1, sizeof(char))))
-		return (NULL);
-	if (n < 0)
+		errno = ENOMEM;
+	if (!errno && n < 0)
 	{
 		input = input * (-1);
 		result[0] = '-';
 		i = getlen(n);
 	}
-	else
+	else if (!errno)
 		i = getlen(n) - 1;
-	result[i + 1] = '\0';
-	while (i >= isngtive(n))
+	if (!errno)
+		result[i + 1] = '\0';
+	while (!errno && i >= isngtive(n))
 	{
 		result[i] = input % 10 + '0';
 		input = input / 10;
 		i--;
 	}
-	return (result);
+	return (errno ? NULL : result);
 }

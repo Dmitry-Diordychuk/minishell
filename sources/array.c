@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   execute_utils.c                                    :+:      :+:    :+:   */
+/*   array.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
+/*   By: kdustin <kdustin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/17 15:43:40 by kdustin           #+#    #+#             */
-/*   Updated: 2021/01/01 22:06:57 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/03/16 18:58:42 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,15 +16,13 @@
 **	2d array len
 */
 
-int	array_len(char **a)
+int		array_len(char **a)
 {
 	int len;
 
 	len = 0;
 	while (a[len] != NULL)
-	{
 		len++;
-	}
 	return (len);
 }
 
@@ -32,7 +30,7 @@ int	array_len(char **a)
 **	Delete arguments 2d array.
 */
 
-void		free_array(char **args)
+void	free_array(char **args)
 {
 	size_t i;
 
@@ -55,17 +53,18 @@ char	**enlarge(int len, char **a, char *new_arg)
 	char	**result_args;
 
 	if (!(result_args = (char**)malloc(sizeof(char*) * (len + 2))))
+	{
+		errno = ENOMEM;
+		free_array(a);
 		return (NULL);
+	}
 	i = 0;
 	while (i < len)
 	{
-		if (!(result_args[i] = ft_strdup(a[i])))
-		{
-			free_array(result_args);
-			return (NULL);
-		}
+		result_args[i] = a[i];
 		i++;
 	}
+	free(a);
 	result_args[i] = new_arg;
 	result_args[++i] = NULL;
 	return (result_args);

@@ -6,150 +6,69 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/18 06:06:46 by kdustin           #+#    #+#             */
-/*   Updated: 2020/12/30 17:41:50 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/03/24 21:48:20 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-t_list *lexer_error_handler(t_list **tokens, char **tmp, int error)
+int			recognize_dollar(t_dlist **wordlist, char **input_line, int flag,
+															int *attach_flag)
 {
-	if (error == ALLOCATION_FAILED)
+	char *word;
+
+	if (errno != 0)
+		return (ERROR);
+	if ((*(*input_line + 1) == '\'' || *(*input_line + 1) == '"') &&
+	(flag & DEFAULT || flag == (WORD | DOLLAR)))
 	{
-		ft_lstclear(tokens, delete_token);
-		free(*tmp);
-		return (NULL);
+		(*input_line)++;
+		return (SUCCESSED);
 	}
-	free(*tmp);
-	return (*tokens);
+	word = NULL;
+	add_letter(&word, **input_line);
+	while ((*input_line)++ && errno == 0 &&
+	!ft_strchr("'\"\\;|><\t\n\v\f\r $=:", **input_line))
+		add_letter(&word, **input_line);
+	if (errno == 0 && flag & DQUOTE && **input_line == '"')
+		add_word(wordlist, word, flag | DOLLAR | CLOSED);
+	else if (errno == 0)
+		add_word(wordlist, word, flag | DOLLAR | *attach_flag);
+	if (errno != 0)
+		free(word);
+	turn_on(attach_flag);
+	return (errno ? ERROR : SUCCESSED);
 }
 
-int	do_if_quotes(t_list **tokens, char **tmp, const char *input,int *quote)
+/*
+**	return in g_wordlist
+*/
+
+int			run_lexer(t_dlist **wordlist, char *input_line)
 {
-	int		error;
+	int attach;
 
-	if (((*input == '\'') && (*quote != WEAK_OPEN) && (*quote != SLASH_OPEN)) ||
-		((*input == '"') && (*quote != STRONG_OPEN) && (*quote != SLASH_OPEN)))
+	attach = 0;
+	wind_off(&input_line);
+	while (*input_line != '\0' && errno == 0)
 	{
-		error = try_add_word_token(tokens, tmp, *quote);
-		if (*input == '\'' && *quote == CLOSE)
-			*quote = STRONG_OPEN;
-		else if (*input == '"' && *quote == CLOSE)
-			*quote = WEAK_OPEN;
-		else
-			*quote = CLOSE;
-		error = add_token(tokens, *input, NULL);
-		if (error == ALLOCATION_FAILED)
-			return (ALLOCATION_FAILED);
-		return (TRUE);
-	}
-	else if (*input == '\\' && *quote != STRONG_OPEN && *quote != SLASH_OPEN)
-	{
-		if (*quote == WEAK_OPEN && *(input + 1) != '$' && *(input + 1) != '"')
-			return (FALSE);
-		*quote = SLASH_OPEN;
-		return (TRUE);
-	}
-	return (FALSE);
-}
-
-int do_if_enviroment(t_list **tokens, char **tmp, const char *input, int quote)
-{
-	int		error;
-
-	if (*input == '$' && quote != STRONG_OPEN && quote != SLASH_OPEN)
-	{
-		error = try_add_word_token(tokens, tmp, quote);
-		if (*(input + 1) == '?')
-			error = add_token(tokens, LAST_RESULT, NULL);
-		else
-			error = add_token(tokens, *input, NULL);
-		if (error == ALLOCATION_FAILED)
-			return (ALLOCATION_FAILED);
-		return (TRUE);
-	}
-	return (FALSE);
-}
-
-int	do_if_other(t_list **tokens, char **tmp, const char *input, int *quote)
-{
-	int			error;
-
-	if (strchr(";|<>", *input) && *quote == CLOSE)
-	{
-		error = try_add_word_token(tokens, tmp, *quote);
-		if (*input == '>' && *(input + 1) == '>')
-			error = add_token(tokens, GREATGREAT, NULL);
-		else
-			error = add_token(tokens, *input, NULL);
-		if (error == ALLOCATION_FAILED)
-			return (ALLOCATION_FAILED);
-		return (TRUE);
-	}
-	else if (ft_isspace(*input) && *quote == CLOSE)
-	{
-		if (try_add_word_token(tokens, tmp, *quote) == ALLOCATION_FAILED)
-			return (ALLOCATION_FAILED);
-		if (*tokens != NULL)
-			if (((t_token*)ft_lstlast(*tokens)->content)->name != BLANK)
-				if (add_token(tokens, BLANK, NULL) == ALLOCATION_FAILED)
-					return (ALLOCATION_FAILED);
-		return (TRUE);
-	}
-	return (FALSE);
-}
-
-int	get_token_size(const char *input, int quote)
-{
-	if ((((*input == '$') && (*(input + 1) == '?')) && quote != STRONG_OPEN) ||
-		(((*input == '>') && (*(input + 1) == '>')) && quote == CLOSE))
-		return (2);
-	return (1);
-}
-
-t_list *run_lexer(const char *input)
-{
-	t_list	*tokens;
-	char	*tmp;
-	int		quote;
-	int		error;
-	int		prev_quote;
-
-	if (input == NULL)
-		return (NULL);
-	tokens = NULL;
-	tmp = NULL;
-	quote = CLOSE;
-	prev_quote = CLOSE;
-	while (*input != '\0')
-	{
-		if ((error = do_if_quotes(&tokens, &tmp, input, &quote)) ||
-			(error = do_if_other(&tokens, &tmp, input, &quote)) ||
-			(error = do_if_enviroment(&tokens, &tmp, input, quote)))
-			;
-		else if (ft_isspace(*input) && quote == SLASH_OPEN)
+		if (*input_line == '\'' || *input_line == '"')
 		{
-			error = try_add_word_token(&tokens, &tmp, quote);
-			if (error == ALLOCATION_FAILED)
-				break;
-			if (tmp == NULL && *input == ' ')
-				if (add_token(&tokens, WORD, ft_strdup("")) == ALLOCATION_FAILED)
-					return (NULL);
-			error = add_token(&tokens, BLANK, NULL);
-			quote = prev_quote;
+			input_line++;
+			if (*(input_line - 1) == '\'')
+				recognize_single_quote(wordlist, &input_line, &attach);
+			else if (*(input_line - 1) == '"')
+				recognize_double_quote(wordlist, &input_line, &attach);
+			input_line++;
 		}
-		else
-		{
-			error = add_letter(&tmp, *input);
-			if (quote == SLASH_OPEN)
-				quote = prev_quote;
-		}
-		if (error == ALLOCATION_FAILED)
-			break;
-		if (quote != SLASH_OPEN)
-			prev_quote = quote;
-		input = input + get_token_size(input, quote);
+		else if (ft_strchr(";|><", *input_line) && *input_line != '\0')
+			recognize_operator(wordlist, &input_line);
+		else if (*input_line == '$')
+			recognize_dollar(wordlist, &input_line, WORD | DOLLAR, &attach);
+		else if (!ft_isspace(*input_line))
+			recognize_default(wordlist, &input_line, &attach);
+		else if (!(attach = 0))
+			input_line++;
 	}
-	error = try_add_word_token(&tokens, &tmp, quote);
-	return (lexer_error_handler(&tokens, &tmp, error));
+	return (errno ? ERROR : SUCCESSED);
 }

@@ -6,12 +6,13 @@
 #    By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/12/16 13:35:35 by kdustin           #+#    #+#              #
-#    Updated: 2020/12/26 20:20:08 by kdustin          ###   ########.fr        #
+#    Updated: 2021/03/24 21:47:47 by kdustin          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 SRC_DIR := sources
-SRC_SUB_DIR := buildin environment error execute lexer parser signal tests
+SRC_SUB_DIR := buildin environment error execute lexer parser signal tests term\
+				word hist
 OBJ_DIR := objects
 BIN_DIR := .
 INC_DIR := includes
@@ -20,35 +21,45 @@ NAME := $(BIN_DIR)/minishell
 LIBFT_DIR := libft
 
 LDFLAGS := -L$(LIBFT_DIR)
-LDLIBS := -lft
+LDLIBS := -lft -ltermcap
 
-CFLAGS := -g #-Wall -Werror -Wextra
+CFLAGS := -g -Wall -Werror -Wextra
 
-SRCS_BUILDIN := $(addprefix buildin/,		cd.c		\
-											echo.c		\
-											env.c		\
-											exit.c		\
-											export.c	\
-											ls.c		\
-											pwd.c		\
-											unset.c)
+SRCS_BUILDIN := $(addprefix buildin/,			cd.c		\
+												echo.c		\
+												env.c		\
+												exit.c		\
+												export.c	\
+												pwd.c		\
+												unset.c		\
+												sort.c)
 
-SRCS_ENVIRONMENT := $(addprefix buildin/,	environment.c)
+SRCS_ENVIRONMENT := $(addprefix environment/,	environment.c)
 
-SRCS_ERROR := $(addprefix error/,			error.c)
+SRCS_ERROR := $(addprefix error/,				error.c)
 
-SRCS_EXECUTE := $(addprefix execute/,		command.c 			\
-											execute_utils.c		\
-											simple_command.c)
+SRCS_EXECUTE := $(addprefix execute/,			execute.c			\
+												fd.c)
 
-SRCS_LEXER := $(addprefix lexer/,			lexer_utils.c		\
-											lexer.c				\
-											token.c)
+SRCS_LEXER := $(addprefix lexer/,				lexer_recognize.c		\
+												lexer_recognize_utils.c	\
+												lexer.c)
 
-SRCS_PARSER := $(addprefix parser/,			parser.c)
+SRCS_PARSER := $(addprefix parser/,				parser.c			\
+												parser_word.c		\
+												parser_command.c)
 SRCS_SIGNAL := $(addprefix signal/, )
-SRCS_TESTS := $(addprefix tests/,			simple_command_test.c \
-											lexer_parser_test.c)
+
+SRCS_TERM := $(addprefix term/,					init.c					\
+												keys_handlers.c			\
+												keys_handlers_arrows.c	\
+												readline.c)
+
+SRCS_WORD := $(addprefix word/,					word.c					\
+												word_utils.c)
+
+SRCS_HIST := $(addprefix hist/,					hist.c					\
+												hist_utils.c)
 
 SRCS := $(addprefix $(SRC_DIR)/,	$(SRCS_BUILDIN)		\
 									$(SRCS_ENVIRONMENT)	\
@@ -57,9 +68,18 @@ SRCS := $(addprefix $(SRC_DIR)/,	$(SRCS_BUILDIN)		\
 									$(SRCS_LEXER)		\
 									$(SRCS_PARSER)		\
 									$(SRCS_SIGNAL)		\
-									main.c)
-
-SRCS_TEST := SRCS $(addprefix $(SRC_DIR)/, $(SRCS_TESTS))
+									$(SRCS_TERM)		\
+									$(SRCS_WORD)		\
+									$(SRCS_HIST)		\
+									main.c				\
+									cmdtbl.c			\
+									simcmd.c			\
+									array.c				\
+									file.c				\
+									path.c				\
+									expansion.c			\
+									signal.c			\
+									hist.c)
 
 OBJS := $(addprefix $(OBJ_DIR)/, $(notdir $(patsubst %.c, %.o, $(SRCS))))
 OBJS_TEST := $(addprefix $(OBJ_DIR)/, $(notdir $(patsubst %.c, %.o, $(SRCS_TESTS))))
@@ -67,7 +87,7 @@ OBJS_TEST := $(addprefix $(OBJ_DIR)/, $(notdir $(patsubst %.c, %.o, $(SRCS_TESTS
 all: $(NAME)
 
 $(NAME): $(OBJS) | $(BIN_DIR)
-	$(MAKE) -C $(LIBFT_DIR)/ bonus
+	$(MAKE) -C $(LIBFT_DIR)/
 	$(CC) $(LDFLAGS) $^ $(LDLIBS) -o $@
 
 vpath %.c $(SRC_DIR) $(addprefix $(SRC_DIR)/, $(SRC_SUB_DIR))
@@ -90,11 +110,3 @@ re: fclean all
 	$(MAKE) -C $(LIBFT_DIR)/ re
 
 .PHONY: all clean fclean re
-
-simple_command_test: objects/simple_command_test.o objects/simple_command.o objects/execute_utils.o
-	$(MAKE) -C $(LIBFT_DIR)/ bonus
-	$(CC) $(CFLAGS) $(LDFLAGS) $^ $(LDLIBS) -o simple_command_test
-
-lexer_parser_test: objects/lexer_parser_test.o objects/lexer.o objects/token.o objects/lexer_utils.o objects/parser.o objects/environment.o objects/command.o objects/simple_command.o objects/execute_utils.o
-	$(MAKE) -C $(LIBFT_DIR)/ bonus
-	$(CC) $(CFLAGS) $(LDFLAGS) $^ $(LDLIBS) -o lexer_parser_test

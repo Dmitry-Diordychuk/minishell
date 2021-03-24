@@ -3,30 +3,29 @@
 /*                                                        :::      ::::::::   */
 /*   env.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: che <che@student.42.fr>                    +#+  +:+       +#+        */
+/*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/17 05:25:34 by kdustin           #+#    #+#             */
-/*   Updated: 2021/01/04 23:22:54 by che              ###   ########.fr       */
+/*   Updated: 2021/03/20 20:58:44 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	ft_putstrn(char *s)
-{
-	ft_putstr_fd(s, 1);
-	write(1, "\n", 1);
-}
+#include "minishell.h"
 
-int		ft_env(void)
+int				buildin_env(t_env *env)
 {
-	int	i;
+	char		**ne;
+	int			i;
 
+	ne = env->envs;
 	i = 0;
-	while (g_env_vars && g_env_vars[i] != NULL)
+	while (ne[i])
 	{
-		ft_putstrn(g_env_vars[i]);
+		write(1, ne[i], ft_strlen(ne[i]));
+		write(1, "\n", 1);
 		i++;
 	}
-	return (1);
+	return (SUCCESSED);
 }

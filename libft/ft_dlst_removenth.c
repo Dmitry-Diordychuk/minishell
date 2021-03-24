@@ -1,40 +1,30 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   simple_command_test.c                              :+:      :+:    :+:   */
+/*   ft_dlst_removenth.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/12/17 07:14:15 by kdustin           #+#    #+#             */
-/*   Updated: 2021/01/01 21:50:26 by kdustin          ###   ########.fr       */
+/*   Created: 2021/02/13 13:10:53 by kdustin           #+#    #+#             */
+/*   Updated: 2021/03/24 22:07:50 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "libft.h"
 
-void print_arg(char **args)
+t_bool	ft_dlst_removenth(t_dlist **list, t_ddelfunc del, size_t n)
 {
-	size_t i;
+	t_delement elem;
 
-	i = -1;
-	while (args[++i] != NULL)
+	if (del != NULL)
 	{
-		ft_putstr_fd(args[i], 1);
-		ft_putchar_fd('\n', 1);
+		if (n == 0)
+			return (ft_dlst_removefirst(list, del));
+		elem = ft_dlst_popnth_elem(list, n);
+		if (elem == NULL)
+			return (FALSE);
+		ft_dlst_del(elem, del);
+		return (TRUE);
 	}
-}
-
-int	main(void)
-{
-	t_sim_cmd *sim_cmd;
-
-	sim_cmd = create_sim_cmd();
-
-	ft_putnbr_fd(sim_cmd->argc, 1);
-	ft_putchar_fd('\n', 1);
-	insert_arg(sim_cmd, "test1");
-	insert_arg(sim_cmd, "test2");
-	insert_arg(sim_cmd, "test3");
-	print_arg(sim_cmd->argv);
-	return (0);
+	return (FALSE);
 }

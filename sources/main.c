@@ -3,112 +3,119 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kdustin <kdustin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/16 17:02:09 by kdustin           #+#    #+#             */
-/*   Updated: 2021/01/06 17:03:36 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/03/24 20:54:01 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	free_handler(char **input, t_list **tokens, t_list **commands, int return_code)
+int		check_command_argument(char **input_line, int argc, char **argv)
 {
-	if (input != NULL)
+	*input_line = NULL;
+	if (!errno && argc > 1 && !ft_strcmp(argv[1], "-c"))
 	{
-		if (*input != NULL)
+		if (argc < 3)
 		{
-			free(*input);
-			*input = NULL;
+			msg("minishell: -c: option requires an argument", 0, 0);
+			errno = EINVAL;
+		}
+		else
+		{
+			*input_line = argv[2];
+			return (TRUE);
 		}
 	}
-	if (tokens != NULL)
-	{
-		if (*tokens != NULL)
-		{
-			ft_lstclear(tokens, delete_token);
-			*tokens = NULL;
-		}
-	}
-	if (commands != NULL)
-	{
-		if (*commands != NULL)
-		{
-			ft_lstclear(commands, delete_command);
-			*commands = NULL;
-		}
-	}
-	return (return_code);
+	if (errno)
+		return (FALSE);
+	return (FALSE);
 }
 
-void signal_handler(int sig)
+int		run_command(t_data *data)
 {
-	if (sig == SIGINT)
+	data->wordlist = NULL;
+	if (!errno)
+		run_lexer(&data->wordlist, data->input_line);
+	if (errno == EIO)
+		msg("minishell: syntax error near unexpected token `newline'\n", 0, 0);
+	if (errno == EIO)
+		return (ERROR);
+	while (data->wordlist != NULL)
 	{
-		ft_putstr_fd("\b\b  ", 2);
-		ft_putstr_fd("\n1minishell$ ", 2);
+		data->table = NULL;
+		if (run_parser(&data->wordlist, &data->table) ||
+		run_expansion(&data->table, data->env))
+		{
+			errno = 0;
+			break ;
+		}
+		if (execute(data->table, data->env))
+			errno = 0;
+		delete_cmdtbl(data->table);
+		if (data->env->is_exit == TRUE)
+			free(data->wordlist);
+		if (data->env->is_exit == TRUE)
+			break ;
 	}
-	if (sig == SIGQUIT)
+	return (errno ? ERROR : SUCCESSED);
+}
+
+int		run_loop(t_data *data)
+{
+	data->input_line = NULL;
+	while (1)
 	{
-		ft_putstr_fd("\b\b  \b\b", 2);
+		set_signals(SIGMOD_SHELL);
+		ft_putstr_fd("minishell: ", 1);
+		if (readline(&data->input_line, &data->history, data->env))
+			return (ERROR);
+		if (data->env->is_exit == TRUE)
+		{
+			free(data->input_line);
+			return (SUCCESSED);
+		}
+		if (!errno)
+			run_command(data);
+		free(data->input_line);
+		data->input_line = NULL;
+		if (data->env->is_exit == TRUE)
+			return (SUCCESSED);
+	}
+	return (errno ? ERROR : SUCCESSED);
+}
+
+void	data_container(int set_get, t_data *ret_data)
+{
+	static t_data data;
+
+	if (set_get == SET)
+	{
+		data = *ret_data;
+	}
+	else
+	{
+		*ret_data = data;
 	}
 }
 
-int get_envs_from_envp(char **envp)
+int		main(int argc, char **argv, char **envp)
 {
-	int		i;
-	int		j;
-	char	**split;
+	t_data	data;
 
-	i = 0;
-	g_env_vars = NULL;
-	while (envp[i] != NULL)
-	{
-		if (!(split = ft_split(envp[i], '=')))
-		{
-			return (ALLOCATION_FAILED);
-		}
-		add_env_var(&g_env_vars, split[0], split[1]);
-		j = 0;
-		while (split[j] != NULL)
-			free(split[j++]);
-		free(split);
-		i++;
-	}
-	return (SUCCESSED);
-}
-
-int main(int argc, char **argv, char **envp)
-{
-	int		gnl_ret;
-	char	*input;
-	t_list	*tokens;
-	t_list	*commands;
-
-	if (get_envs_from_envp(envp) == ALLOCATION_FAILED)
-		return (free_handler(NULL, NULL, NULL, -1));
-	input = NULL;
-	ft_putstr_fd("minishell$ ", 1);
-	g_pid = -1;
-	signal(SIGINT, signal_handler);
-	signal(SIGQUIT, signal_handler);
-	while ((gnl_ret = get_next_line(1, &input)))
-	{
-		if ((tokens = run_lexer(input)) < 0)
-		{
-			return (free_handler(&input, &tokens, NULL, ALLOCATION_FAILED));
-		}
-		if ((run_parser(tokens, &commands)) < 0)
-			return (free_handler(&input, &tokens, &commands, ALLOCATION_FAILED));
-		while (commands != NULL)
-		{
-			if (execute(commands->content) == ALLOCATION_FAILED)
-				return (free_handler(&input, &tokens, &commands, -1));
-			commands = commands->next;
-		}
-		free_handler(&input, NULL, &commands, ONLYFREE);
-		ft_putstr_fd("minishell$ ", 1);
-	}
-	ft_putstr_fd("exit\n", 1);
-	return (free_handler(&input, NULL, NULL, SUCCESSED));
+	data_container(SET, &data);
+	data.history = NULL;
+	if (!(data.env = (t_env*)malloc(sizeof(t_env))))
+		return (ERROR);
+	if (init_env(envp, data.env))
+		return (ERROR);
+	if (check_command_argument(&(data.input_line), argc, argv))
+		run_command(&data);
+	else
+		run_loop(&data);
+	free_array(data.env->envs);
+	free(data.env);
+	ft_dlst_clear(&data.history, delete_record);
+	return (data.env->last_return);
 }

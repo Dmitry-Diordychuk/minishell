@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/05/14 21:13:26 by kdustin           #+#    #+#             */
-/*   Updated: 2020/12/18 21:12:59 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/02/10 17:23:54 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,15 +18,11 @@
 ** of ’next’ must not be freed.
 */
 
-void	ft_lstdelone(t_list **lst, void (*del)(void *))
+void	ft_lstdelone(t_list *lst, void (*del)(void *))
 {
-	t_list *temp;
-
-	if (*lst != NULL && del != NULL)
+	if (lst != NULL && del != NULL)
 	{
-		del((*lst)->content);
-		temp = (*lst)->next;
-		ft_free(*lst);
-		*lst = temp;
+		del(lst->content);
+		ft_free(lst);
 	}
 }

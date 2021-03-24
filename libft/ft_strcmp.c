@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strcmp.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kdustin <kdustin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/07/11 17:43:31 by kdustin           #+#    #+#             */
-/*   Updated: 2020/07/11 19:29:54 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/02/09 11:10:49 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@
 ** `\200' is greater than `\0'.
 */
 
-int	ft_strcmp(const char *s1, const char *s2)
+unsigned int	ft_strcmp(const char *s1, const char *s2)
 {
 	int i;
 

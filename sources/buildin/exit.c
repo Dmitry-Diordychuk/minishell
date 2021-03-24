@@ -3,46 +3,92 @@
 /*                                                        :::      ::::::::   */
 /*   exit.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: che <che@student.42.fr>                    +#+  +:+       +#+        */
+/*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/17 05:25:47 by kdustin           #+#    #+#             */
-/*   Updated: 2021/01/05 03:02:43 by che              ###   ########.fr       */
+/*   Updated: 2021/03/24 21:03:20 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-#include <stdio.h>
 
-int     ft_strisnum2(char *line)
+int			ft_atoi_exit(const char *nptr, int *e)
 {
-    int	i;
+	unsigned long long	res;
+	int					sign;
 
-	i = 0;
-	if (line[0] == '-' || line[0] == '+')
-		i++;
-	while (line[i])
+	res = 0;
+	sign = 1;
+	if (*nptr == '+' || *nptr == '-')
 	{
-		if (line[i] < '0' || line[i] > '9')
-			return (0);
-		i++;
+		if (*nptr == '-')
+			sign = -1;
+		nptr++;
 	}
-	return (1);
+	while (*nptr && *nptr == '0')
+		nptr++;
+	while (*nptr && *nptr >= '0' && *nptr <= '9')
+	{
+		res = res * 10 + (*nptr - 48);
+		nptr++;
+		(*e)++;
+	}
+	if (*nptr && !(*nptr >= '0' && *nptr <= '9') && (*e = 0))
+		return (0);
+	if (res > 9223372036854775807 || *e > 20)
+		*e = 0;
+	return ((int)res * sign);
 }
 
-void		ft_exit(char **arg, int argc)
+int			buildin_exit_error(char *arvg)
 {
-    int i;
+	write(1, "minishell: exit: ", 17);
+	write(1, arvg, ft_strlen(arvg));
+	write(1, ": numeric argument required\n", 28);
+	return (2);
+}
 
-	i = 0;
-    if (argc > 2)
-        ft_putendl_fd("minishell: exit: too many arguments", 2);
-	else if (argc == 2 && ft_strisnum2(arg[1]) == 0)
-    {
-        g_last_result = 255;
-		ft_putstr_fd("minishell: exit: ", 2);
-		ft_putstr_fd(arg[1], 2);
-		ft_putendl_fd(": numeric argument required", 2);
-    }
-    else if (argc == 2)
-        g_last_result = ft_atoi(arg[1]);
+int			buildin_exit3(int i)
+{
+	while (i < 0)
+		i = i + 256;
+	while (i > 255)
+		i = i - 256;
+	return (i);
+}
+
+int			buildin_exit2(int argc, t_env *env, int ii)
+{
+	if (argc > 2)
+	{
+		write(1, "minishell: exit: too many arguments\n", 36);
+		env->is_exit = FALSE;
+		return (1);
+	}
+	else
+		return (buildin_exit3(ii));
+	return (0);
+}
+
+int			buildin_exit(int argc, char **argv, t_env *env)
+{
+	int					ii;
+	char				*s;
+	int					e;
+
+	write(1, "exit\n", 5);
+	if (argc < 2)
+		return (buildin_exit3(env->last_return));
+	else
+	{
+		e = 1;
+		s = ft_strtrim(argv[1], " \t\n\v\f\r");
+		ii = ft_atoi_exit(s, &e);
+		free(s);
+		if (e == 0)
+			return (buildin_exit_error(argv[1]));
+		else
+			return (buildin_exit2(argc, env, ii));
+	}
+	return (env->last_return);
 }

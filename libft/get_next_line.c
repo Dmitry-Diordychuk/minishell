@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/11 15:28:44 by kdustin           #+#    #+#             */
-/*   Updated: 2021/01/05 19:15:14 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/03/18 22:22:49 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,18 +21,14 @@ static int	handle_error(char **str)
 
 int			get_next_line(int fd, char **line)
 {
-	char		buf[BUFFER_SIZE];
-	static char	*data;
-	int			counter;
+	char			buf[BUFFER_SIZE];
+	static char		*data;
+	int				counter;
 
 	buf[0] = '\0';
 	counter = 1;
-	while (!strchr(data, '\n') && (counter = read(fd, buf, BUFFER_SIZE)) >= 0)
+	while (!strchr(data, '\n') && (counter = read(fd, buf, BUFFER_SIZE)) > 0)
 	{
-		if (counter == 0)
-			write(1, "  \b\b", 4);
-		if (data == NULL && counter == 0)
-			break;
 		if (!(data = data_add(data, buf, counter)))
 			return (handle_error(&data));
 	}
