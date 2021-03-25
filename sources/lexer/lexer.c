@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/18 06:06:46 by kdustin           #+#    #+#             */
-/*   Updated: 2021/03/25 16:28:31 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/03/25 18:46:33 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,20 @@ int			lexer_handle_exit(int error, t_dlist **wordlist)
 	if (error == TOKEN_ERROR)
 		msg("minishell: syntax error near unexpected token `newline'\n", 0, 0);
 	return (error);
+}
+
+int			handle_backslash(char **word, char **input_line)
+{
+	(*input_line)++;
+	if (**input_line == '\0')
+	{
+		msg("minishell: syntax error near unexpected token `newline'\n", 0, 0);
+		return (TOKEN_ERROR);
+	}
+	if (add_letter(word, **input_line) < 0)
+		return (ALLOCATION_ERROR);
+	(*input_line)++;
+	return (SUCCESSED);
 }
 
 int			recognize_dollar(t_dlist **wordlist, char **input_line, int flag,
@@ -37,7 +51,7 @@ int			recognize_dollar(t_dlist **wordlist, char **input_line, int flag,
 	word = NULL;
 	error = add_letter(&word, **input_line);
 	while (!error && (*input_line)++ &&
-	!ft_strchr("'\"\\;|><\t\n\v\f\r $=:", **input_line))
+	!ft_strchr("'\"\\;|>< $=:", **input_line))
 		error = add_letter(&word, **input_line);
 	if (!error && flag & DQUOTE && **input_line == '"')
 		error = add_word(wordlist, word, flag | DOLLAR | CLOSED);
@@ -48,10 +62,6 @@ int			recognize_dollar(t_dlist **wordlist, char **input_line, int flag,
 	turn_on(attach_flag);
 	return (error ? error : SUCCESSED);
 }
-
-/*
-**	return in g_wordlist
-*/
 
 int			recognize_quotes(t_dlist **wordlist, char **input_line, int *attach)
 {

@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/16 17:02:02 by kdustin           #+#    #+#             */
-/*   Updated: 2021/03/25 16:37:57 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/03/25 18:51:35 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -159,6 +159,7 @@ int						recognize_double_quote(t_dlist **wordlist,
 
 void					wind_off(char **input_line);
 int						turn_on(int *attach_flag);
+int						skip_dollar(char **input_line, char **word);
 
 /*
 **	Operators
@@ -279,6 +280,7 @@ int						buildin_cd(int argc, char **argv, t_env *env);
 int						buildin_pwd();
 int						buildin_export(int argc, char **argv, t_env *env);
 int						buildin_unset(int argc, char **argv, t_env *env);
+char					**buildin_unset2(char *name, char **envs, int env_len);
 int						buildin_env(t_env *env);
 int						buildin_exit(int argc, char **argv, t_env *env);
 

@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/16 17:02:09 by kdustin           #+#    #+#             */
-/*   Updated: 2021/03/25 16:43:38 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/03/25 18:25:39 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@ int		run_command(t_data *data)
 {
 	int error;
 
+	data->env->last_return = 0;
 	data->wordlist = NULL;
 	if ((error = run_lexer(&data->wordlist, data->input_line)))
 		return (error);
@@ -58,6 +59,8 @@ int		run_command(t_data *data)
 
 int		run_loop(t_data *data)
 {
+	int error;
+
 	data->input_line = NULL;
 	while (1)
 	{
@@ -66,12 +69,14 @@ int		run_loop(t_data *data)
 		if (readline(&data->input_line, &data->history, data->env))
 			return (ERROR);
 		if (data->env->is_exit == TRUE)
-		{
 			free(data->input_line);
+		if (data->env->is_exit == TRUE)
 			return (SUCCESSED);
-		}
-		if (run_command(data) == -2)
-			return (ERROR);
+		error = run_command(data);
+		if (error == ALLOCATION_ERROR)
+			return (ALLOCATION_ERROR);
+		else if (error == TOKEN_ERROR)
+			data->env->last_return = 258;
 		free(data->input_line);
 		data->input_line = NULL;
 		if (data->env->is_exit == TRUE)
@@ -105,6 +110,8 @@ int		main(int argc, char **argv, char **envp)
 		return (ERROR);
 	if (init_env(envp, data.env))
 		return (ERROR);
+	data.env->envs =
+			buildin_unset2("OLDPWD", data.env->envs, array_len(data.env->envs));
 	if (check_command_argument(&(data.input_line), argc, argv))
 		error = run_command(&data);
 	else

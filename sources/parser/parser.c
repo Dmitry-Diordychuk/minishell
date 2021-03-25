@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/20 17:33:31 by kdustin           #+#    #+#             */
-/*   Updated: 2021/03/25 14:22:37 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/03/25 18:06:34 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,9 +91,11 @@ int			list(t_dlist **wordlist, t_cmdtbl **table)
 		if (peek_word(*wordlist) & SEPARATOR || peek_word(*wordlist) & PIPE)
 		{
 			if (peek_word(*wordlist) & SEPARATOR)
-				msg("minishell: syntax error near unexpected token `;'", 0, 0);
+				msg("minishell: syntax error near unexpected token `;'", "\n",
+																			0);
 			if (peek_word(*wordlist) & PIPE)
-				msg("minishell: syntax error near unexpected token `|'", 0, 0);
+				msg("minishell: syntax error near unexpected token `|'", "\n",
+																			0);
 			return (TOKEN_ERROR);
 		}
 		error = pipe_sequence(wordlist, table);

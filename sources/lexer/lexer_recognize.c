@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/07 07:22:16 by kdustin           #+#    #+#             */
-/*   Updated: 2021/03/25 13:37:40 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/03/25 18:46:09 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,10 +130,10 @@ int	recognize_double_quote(t_dlist **wordlist, char **input_line,
 	while (**input_line != '\"' && !error)
 		if (**input_line == '\0')
 			error = TOKEN_ERROR;
+		else if (**input_line == '\\' && *(*input_line + 1) == '$')
+			error = skip_dollar(input_line, &word);
 		else if (**input_line == '$' && (dollar_flag = TRUE))
 			error = double_qoute_dollar(wordlist, input_line, attach, &word);
-		else if (**input_line == '\\')
-			error = handle_backslash(&word, input_line);
 		else if (!(error = add_letter(&word, **input_line)))
 			(*input_line)++;
 	if (!error && !dollar_flag && !(word) && !(word = ft_strdup("")))
