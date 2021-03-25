@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/24 20:06:54 by kdustin           #+#    #+#             */
-/*   Updated: 2021/03/24 20:10:49 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/03/25 14:38:06 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,17 +19,20 @@
 
 int			cmd_word(t_dlist **wordlist, t_cmdtbl **table)
 {
+	int error;
+
+	error = 0;
 	if (*wordlist)
 	{
 		if (peek_word(*wordlist) & WORD)
 		{
-			add_simcmd(table);
-			if (!errno)
+			error = add_simcmd(table);
+			if (!error)
 				pass_words(wordlist,
 				&((t_simcmd*)ft_dlst_getlast_data((*table)->rows))->argv_list);
 		}
 	}
-	return (errno ? ERROR : SUCCESSED);
+	return (error ? error : SUCCESSED);
 }
 
 /*
@@ -40,12 +43,20 @@ int			cmd_word(t_dlist **wordlist, t_cmdtbl **table)
 
 int			cmd_prefix(t_dlist **wordlist, t_cmdtbl **table)
 {
-	int is_redirect;
+	int	is_redirect;
+	int	error;
 
-	is_redirect = io_redirect(wordlist, table);
-	if (!errno && is_redirect)
-		cmd_prefix(wordlist, table);
-	return (errno ? ERROR : SUCCESSED);
+	error = 0;
+	if ((is_redirect = io_redirect(wordlist, table)) < 0)
+	{
+		if (errno == ENOMEM)
+			error = ALLOCATION_ERROR;
+		else if (errno == EIO)
+			error = TOKEN_ERROR;
+	}
+	if (!error && is_redirect)
+		error = cmd_prefix(wordlist, table);
+	return (error ? error : SUCCESSED);
 }
 
 /*
@@ -60,18 +71,26 @@ int			cmd_suffix(t_dlist **wordlist, t_cmdtbl **table)
 {
 	int is_redirect;
 	int is_arg;
+	int error;
 
+	error = 0;
 	is_arg = 0;
 	if (*wordlist)
 	{
-		is_redirect = io_redirect(wordlist, table);
-		if (!errno && peek_word(*wordlist) & WORD)
+		if ((is_redirect = io_redirect(wordlist, table)) < 0)
+		{
+			if (errno == ENOMEM)
+				error = ALLOCATION_ERROR;
+			else if (errno == EIO)
+				error = TOKEN_ERROR;
+		}
+		if (!error && peek_word(*wordlist) & WORD)
 			is_arg = pass_words(wordlist,
 				&((t_simcmd*)ft_dlst_getlast_data((*table)->rows))->argv_list);
-		if (!errno && (is_redirect || is_arg))
-			cmd_suffix(wordlist, table);
+		if (!error && (is_redirect || is_arg))
+			error = cmd_suffix(wordlist, table);
 	}
-	return (errno ? ERROR : SUCCESSED);
+	return (error ? error : SUCCESSED);
 }
 
 /*
@@ -83,11 +102,13 @@ int			cmd_suffix(t_dlist **wordlist, t_cmdtbl **table)
 
 int			command(t_dlist **wordlist, t_cmdtbl **table)
 {
-	if (!errno)
-		cmd_prefix(wordlist, table);
-	if (!errno)
-		cmd_word(wordlist, table);
-	if (!errno)
-		cmd_suffix(wordlist, table);
-	return (errno ? ERROR : SUCCESSED);
+	int error;
+
+	error = 0;
+	error = cmd_prefix(wordlist, table);
+	if (!error)
+		error = cmd_word(wordlist, table);
+	if (!error)
+		error = cmd_suffix(wordlist, table);
+	return (error ? error : SUCCESSED);
 }

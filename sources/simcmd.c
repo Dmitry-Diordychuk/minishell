@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/17 06:32:13 by kdustin           #+#    #+#             */
-/*   Updated: 2021/03/24 20:58:48 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/03/25 14:58:39 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,24 +57,29 @@ void		delete_simcmd(void *content)
 
 int			add_arg(t_simcmd *simcmd, char *arg)
 {
-	char **tmp;
+	char	**tmp;
+	int		error;
 
-	if (!errno && simcmd->argv == NULL)
+	error = 0;
+	if (simcmd->argv == NULL)
 	{
 		if (!(simcmd->argv = (char**)ft_calloc(sizeof(char*), 2)))
-			errno = ENOMEM;
-		if (!errno)
+			error = ALLOCATION_ERROR;
+		if (!error)
 			simcmd->argv[0] = arg;
 	}
-	else if (!errno && !(tmp = enlarge(simcmd->argc, simcmd->argv, arg)))
-		errno = ENOMEM;
-	if (!errno)
+	else if (!error && !(tmp = enlarge(simcmd->argc, simcmd->argv, arg)))
+		error = ALLOCATION_ERROR;
+	if (!error)
 		simcmd->argc++;
-	if (!errno && simcmd->argc > 1)
+	if (!error && simcmd->argc > 1)
 		simcmd->argv = tmp;
-	if (errno)
+	if (error)
 		free(arg);
-	if (errno)
-		return (ERROR);
+	if (error)
+	{
+		errno = ENOMEM;
+		return (ALLOCATION_ERROR);
+	}
 	return (SUCCESSED);
 }

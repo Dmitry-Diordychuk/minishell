@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/24 21:45:00 by kdustin           #+#    #+#             */
-/*   Updated: 2021/03/24 21:45:06 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/03/25 11:52:06 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,13 +18,15 @@ int			add_letter(char **str, char c)
 	char	*newstr;
 	size_t	len;
 
-	errno = ENOMEM;
 	if (*str != NULL)
 		len = ft_strlen(*str) + 2;
 	else
 		len = 2;
 	if (!(newstr = (char*)malloc(len * sizeof(char))))
-		return (ERROR);
+	{
+		errno = ENOMEM;
+		return (ALLOCATION_ERROR);
+	}
 	i = 0;
 	while (*str != NULL && (*str)[i] != '\0')
 	{
@@ -35,7 +37,6 @@ int			add_letter(char **str, char c)
 	newstr[i] = '\0';
 	free(*str);
 	*str = newstr;
-	errno = 0;
 	return (SUCCESSED);
 }
 
@@ -44,13 +45,13 @@ int			handle_backslash(char **word, char **input_line)
 	(*input_line)++;
 	if (**input_line == '\0')
 	{
-		errno = EIO;
 		msg("minishell: syntax error near unexpected token `newline'\n", 0, 0);
-		return (ERROR);
+		return (TOKEN_ERROR);
 	}
-	add_letter(word, **input_line);
+	if (add_letter(word, **input_line) < 0)
+		return (ALLOCATION_ERROR);
 	(*input_line)++;
-	return (errno ? ERROR : SUCCESSED);
+	return (SUCCESSED);
 }
 
 void		wind_off(char **input_line)

@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/16 17:02:09 by kdustin           #+#    #+#             */
-/*   Updated: 2021/03/24 20:54:01 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/03/25 16:43:38 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ int		check_command_argument(char **input_line, int argc, char **argv)
 		if (argc < 3)
 		{
 			msg("minishell: -c: option requires an argument", 0, 0);
-			errno = EINVAL;
+			return (FALSE);
 		}
 		else
 		{
@@ -28,38 +28,32 @@ int		check_command_argument(char **input_line, int argc, char **argv)
 			return (TRUE);
 		}
 	}
-	if (errno)
-		return (FALSE);
 	return (FALSE);
 }
 
 int		run_command(t_data *data)
 {
+	int error;
+
 	data->wordlist = NULL;
-	if (!errno)
-		run_lexer(&data->wordlist, data->input_line);
-	if (errno == EIO)
-		msg("minishell: syntax error near unexpected token `newline'\n", 0, 0);
-	if (errno == EIO)
-		return (ERROR);
+	if ((error = run_lexer(&data->wordlist, data->input_line)))
+		return (error);
 	while (data->wordlist != NULL)
 	{
 		data->table = NULL;
-		if (run_parser(&data->wordlist, &data->table) ||
-		run_expansion(&data->table, data->env))
-		{
-			errno = 0;
-			break ;
-		}
-		if (execute(data->table, data->env))
-			errno = 0;
+		if ((error = run_parser(&data->wordlist, &data->table)))
+			return (error);
+		if ((error = run_expansion(&data->table, data->env)))
+			return (error);
+		if ((error = execute(data->table, data->env)))
+			return (error);
 		delete_cmdtbl(data->table);
 		if (data->env->is_exit == TRUE)
 			free(data->wordlist);
 		if (data->env->is_exit == TRUE)
 			break ;
 	}
-	return (errno ? ERROR : SUCCESSED);
+	return (error ? error : SUCCESSED);
 }
 
 int		run_loop(t_data *data)
@@ -76,14 +70,14 @@ int		run_loop(t_data *data)
 			free(data->input_line);
 			return (SUCCESSED);
 		}
-		if (!errno)
-			run_command(data);
+		if (run_command(data) == -2)
+			return (ERROR);
 		free(data->input_line);
 		data->input_line = NULL;
 		if (data->env->is_exit == TRUE)
 			return (SUCCESSED);
 	}
-	return (errno ? ERROR : SUCCESSED);
+	return (SUCCESSED);
 }
 
 void	data_container(int set_get, t_data *ret_data)
@@ -103,6 +97,7 @@ void	data_container(int set_get, t_data *ret_data)
 int		main(int argc, char **argv, char **envp)
 {
 	t_data	data;
+	int		error;
 
 	data_container(SET, &data);
 	data.history = NULL;
@@ -111,11 +106,13 @@ int		main(int argc, char **argv, char **envp)
 	if (init_env(envp, data.env))
 		return (ERROR);
 	if (check_command_argument(&(data.input_line), argc, argv))
-		run_command(&data);
+		error = run_command(&data);
 	else
-		run_loop(&data);
+		error = run_loop(&data);
 	free_array(data.env->envs);
 	free(data.env);
 	ft_dlst_clear(&data.history, delete_record);
+	if (error)
+		return (error);
 	return (data.env->last_return);
 }

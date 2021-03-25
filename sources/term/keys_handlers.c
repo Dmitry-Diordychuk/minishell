@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/21 17:45:26 by kdustin           #+#    #+#             */
-/*   Updated: 2021/03/24 20:27:15 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/03/25 16:40:28 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,14 +15,14 @@
 int	signal_c_key(t_dlist **cur_record, t_dlist **history, int *cur_pos)
 {
 	if (apply_func(history, reset_str))
-		return (ERROR);
+		return (ALLOCATION_ERROR);
 	ft_dlst_removefirst(history, delete_record);
 	if (tputs(tgetstr("do", 0), 1, ft_putchar))
 		return (ERROR);
 	if (apply_func(history, save_str))
-		return (ERROR);
+		return (ALLOCATION_ERROR);
 	if (add_record(history, ""))
-		return (ERROR);
+		return (ALLOCATION_ERROR);
 	*cur_record = *history;
 	if (tputs(tgetstr("ks", 0), 1, ft_putchar))
 		return (ERROR);

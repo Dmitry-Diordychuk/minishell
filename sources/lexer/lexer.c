@@ -6,19 +6,28 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/18 06:06:46 by kdustin           #+#    #+#             */
-/*   Updated: 2021/03/24 21:48:20 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/03/25 16:28:31 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
+int			lexer_handle_exit(int error, t_dlist **wordlist)
+{
+	if (error)
+		ft_dlst_clear(wordlist, delete_word_desc);
+	if (error == TOKEN_ERROR)
+		msg("minishell: syntax error near unexpected token `newline'\n", 0, 0);
+	return (error);
+}
+
 int			recognize_dollar(t_dlist **wordlist, char **input_line, int flag,
 															int *attach_flag)
 {
-	char *word;
+	char	*word;
+	int		error;
 
-	if (errno != 0)
-		return (ERROR);
+	error = 0;
 	if ((*(*input_line + 1) == '\'' || *(*input_line + 1) == '"') &&
 	(flag & DEFAULT || flag == (WORD | DOLLAR)))
 	{
@@ -26,49 +35,61 @@ int			recognize_dollar(t_dlist **wordlist, char **input_line, int flag,
 		return (SUCCESSED);
 	}
 	word = NULL;
-	add_letter(&word, **input_line);
-	while ((*input_line)++ && errno == 0 &&
+	error = add_letter(&word, **input_line);
+	while (!error && (*input_line)++ &&
 	!ft_strchr("'\"\\;|><\t\n\v\f\r $=:", **input_line))
-		add_letter(&word, **input_line);
-	if (errno == 0 && flag & DQUOTE && **input_line == '"')
-		add_word(wordlist, word, flag | DOLLAR | CLOSED);
-	else if (errno == 0)
-		add_word(wordlist, word, flag | DOLLAR | *attach_flag);
-	if (errno != 0)
+		error = add_letter(&word, **input_line);
+	if (!error && flag & DQUOTE && **input_line == '"')
+		error = add_word(wordlist, word, flag | DOLLAR | CLOSED);
+	else if (!error)
+		error = add_word(wordlist, word, flag | DOLLAR | *attach_flag);
+	if (error)
 		free(word);
 	turn_on(attach_flag);
-	return (errno ? ERROR : SUCCESSED);
+	return (error ? error : SUCCESSED);
 }
 
 /*
 **	return in g_wordlist
 */
 
+int			recognize_quotes(t_dlist **wordlist, char **input_line, int *attach)
+{
+	int error;
+
+	error = 0;
+	if (*((*input_line) - 1) == '\'')
+		error = recognize_single_quote(wordlist, input_line, attach);
+	else if (*((*input_line) - 1) == '"')
+		error = recognize_double_quote(wordlist, input_line, attach);
+	return (error ? error : SUCCESSED);
+}
+
 int			run_lexer(t_dlist **wordlist, char *input_line)
 {
 	int attach;
+	int error;
 
+	error = 0;
 	attach = 0;
 	wind_off(&input_line);
-	while (*input_line != '\0' && errno == 0)
+	while (*input_line != '\0' && !error)
 	{
 		if (*input_line == '\'' || *input_line == '"')
 		{
 			input_line++;
-			if (*(input_line - 1) == '\'')
-				recognize_single_quote(wordlist, &input_line, &attach);
-			else if (*(input_line - 1) == '"')
-				recognize_double_quote(wordlist, &input_line, &attach);
+			error = recognize_quotes(wordlist, &input_line, &attach);
 			input_line++;
 		}
 		else if (ft_strchr(";|><", *input_line) && *input_line != '\0')
-			recognize_operator(wordlist, &input_line);
+			error = recognize_operator(wordlist, &input_line);
 		else if (*input_line == '$')
-			recognize_dollar(wordlist, &input_line, WORD | DOLLAR, &attach);
+			error = recognize_dollar(wordlist, &input_line, WORD | DOLLAR,
+																	&attach);
 		else if (!ft_isspace(*input_line))
-			recognize_default(wordlist, &input_line, &attach);
+			error = recognize_default(wordlist, &input_line, &attach);
 		else if (!(attach = 0))
 			input_line++;
 	}
-	return (errno ? ERROR : SUCCESSED);
+	return (lexer_handle_exit(error, wordlist));
 }

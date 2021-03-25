@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/16 17:02:02 by kdustin           #+#    #+#             */
-/*   Updated: 2021/03/24 23:22:31 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/03/25 16:37:57 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -296,7 +296,9 @@ int						len_env(char **env);
 
 # define SUCCESSED			0
 # define ERROR				-1
-# define COMMAND_NOT_FOUND	127
+# define ALLOCATION_ERROR	-2
+# define TOKEN_ERROR		-3
+# define READ_LINE_ERROR	-4
 
 void					msg(char *mes1, char *mes2, char *mes3);
 int						free_data(int ret);

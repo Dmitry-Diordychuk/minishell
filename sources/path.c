@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/24 20:55:42 by kdustin           #+#    #+#             */
-/*   Updated: 2021/03/24 22:16:25 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/03/25 16:08:38 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,14 +19,16 @@ int		extend_path(char *filename, char **path)
 	if (!(tmp = ft_strjoin(*path, "/")))
 	{
 		errno = ENOMEM;
-		return (ERROR);
+		*path = NULL;
+		return (ALLOCATION_ERROR);
 	}
 	free(*path);
 	if (!(*path = ft_strjoin(tmp, filename)))
 	{
 		errno = ENOMEM;
+		*path = NULL;
 		free(tmp);
-		return (ERROR);
+		return (ALLOCATION_ERROR);
 	}
 	free(tmp);
 	return (SUCCESSED);

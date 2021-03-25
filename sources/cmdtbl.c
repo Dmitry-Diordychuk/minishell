@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/08 06:46:16 by kdustin           #+#    #+#             */
-/*   Updated: 2021/03/24 21:02:35 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/03/25 14:37:17 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,7 @@ int			add_simcmd(t_cmdtbl **table)
 	if (!errno && !(new_elem = ft_dlst_new(simple_command)))
 	{
 		errno = ENOMEM;
-		return (ERROR);
+		return (ALLOCATION_ERROR);
 	}
 	if (!errno)
 		ft_dlst_append(&(*table)->rows, new_elem);

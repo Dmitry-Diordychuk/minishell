@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/24 20:38:30 by kdustin           #+#    #+#             */
-/*   Updated: 2021/03/24 20:54:26 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/03/25 14:51:07 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ int		wordjoin(char **dest, char *src)
 		{
 			free(src);
 			errno = ENOMEM;
-			return (ERROR);
+			return (ALLOCATION_ERROR);
 		}
 	}
 	else
@@ -32,7 +32,7 @@ int		wordjoin(char **dest, char *src)
 			free(*dest);
 			free(src);
 			errno = ENOMEM;
-			return (ERROR);
+			return (ALLOCATION_ERROR);
 		}
 	}
 	free(*dest);
@@ -96,21 +96,23 @@ char	*glue_dquote(t_dlist **wordlist, char **envp, int *last_return)
 
 char	*glue_words(t_dlist **wordlist, char **envp, int *last_return)
 {
-	char		*words;
+	char	*words;
+	int		error;
 
+	error = 0;
 	words = NULL;
-	while (!errno && *wordlist && peek_word(*wordlist) & WORD)
+	while (!error && *wordlist && peek_word(*wordlist) & WORD)
 	{
 		if (peek_word(*wordlist) & DQUOTE)
-			wordjoin(&words, glue_dquote(wordlist, envp, last_return));
+			error = wordjoin(&words, glue_dquote(wordlist, envp, last_return));
 		else if (peek_word(*wordlist) & DOLLAR)
-			wordjoin(&words, get_env_word(wordlist, envp, last_return));
+			error = wordjoin(&words, get_env_word(wordlist, envp, last_return));
 		else
-			wordjoin(&words, pop_word(wordlist));
+			error = wordjoin(&words, pop_word(wordlist));
 		if (*wordlist && !(peek_word(*wordlist) & ATTACH))
 			break ;
 	}
-	if (errno)
+	if (error)
 		free(words);
-	return (errno ? NULL : words);
+	return (error ? NULL : words);
 }

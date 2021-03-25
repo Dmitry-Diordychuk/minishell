@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/24 20:04:25 by kdustin           #+#    #+#             */
-/*   Updated: 2021/03/24 22:08:26 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/03/25 14:40:25 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ t_bool		pass_words(t_dlist **wordlist, t_dlist **list)
 	t_bool is_arg;
 
 	is_arg = FALSE;
-	while (!errno && *wordlist && peek_word(*wordlist) & WORD)
+	while (*wordlist && peek_word(*wordlist) & WORD)
 	{
 		is_arg = TRUE;
 		ft_dlst_append(list, ft_dlst_popfirst_elem(wordlist));
@@ -27,7 +27,7 @@ t_bool		pass_words(t_dlist **wordlist, t_dlist **list)
 	return (is_arg);
 }
 
-int			init_redirection_fields(t_cmdtbl **table, t_dlist *filename_list,
+void		init_redirection_fields(t_cmdtbl **table, t_dlist *filename_list,
 														int io_redirection_op)
 {
 	if (io_redirection_op == (OPERATOR | LESS))
@@ -42,7 +42,6 @@ int			init_redirection_fields(t_cmdtbl **table, t_dlist *filename_list,
 		(*table)->out_file_list = filename_list;
 		(*table)->is_append = 1;
 	}
-	return (errno ? ERROR : SUCCESSED);
 }
 
 /*
@@ -66,7 +65,9 @@ int			filename(t_dlist **wordlist, t_cmdtbl **table)
 {
 	t_dlist		*name;
 	int			io_operator;
+	int			error;
 
+	error = 0;
 	io_operator = peek_word(*wordlist);
 	ft_dlst_removefirst(wordlist, delete_word_desc);
 	if (*wordlist == NULL || peek_word(*wordlist) & OPERATOR)
@@ -75,19 +76,18 @@ int			filename(t_dlist **wordlist, t_cmdtbl **table)
 	if (peek_word(*wordlist) & WORD)
 	{
 		pass_words(wordlist, &name);
-		if (add_word(&name, NULL, FILE_SEPARATOR))
-		{
-			ft_dlst_clear(&name, delete_word_desc);
-			return (ERROR);
-		}
+		error = add_word(&name, NULL, FILE_SEPARATOR);
 	}
 	else
-		errno = EINVAL;
-	if (!errno)
+	{
+		errno = EIO;
+		error = TOKEN_ERROR;
+	}
+	if (!error)
 		init_redirection_fields(table, name, io_operator);
-	if (errno)
+	if (error)
 		ft_dlst_clear(&name, delete_word_desc);
-	return (errno ? ERROR : SUCCESSED);
+	return (error ? error : SUCCESSED);
 }
 
 /*
@@ -99,20 +99,24 @@ int			filename(t_dlist **wordlist, t_cmdtbl **table)
 
 int			io_redirect(t_dlist **wordlist, t_cmdtbl **table)
 {
-	t_bool is_flag;
+	t_bool	is_flag;
+	int		error;
 
+	error = 0;
 	is_flag = FALSE;
-	while (!errno && *wordlist)
+	while (!error && *wordlist)
 	{
 		if (peek_word(*wordlist) & LESS)
-			filename(wordlist, table);
+			error = filename(wordlist, table);
 		else if (peek_word(*wordlist) & GREAT)
-			filename(wordlist, table);
+			error = filename(wordlist, table);
 		else if (peek_word(*wordlist) & GREATGREAT)
-			filename(wordlist, table);
+			error = filename(wordlist, table);
 		else
 			break ;
 		is_flag = TRUE;
 	}
+	if (error)
+		return (error);
 	return (is_flag);
 }

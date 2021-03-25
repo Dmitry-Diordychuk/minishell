@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/15 10:14:45 by kdustin           #+#    #+#             */
-/*   Updated: 2021/03/24 22:16:33 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/03/25 16:11:01 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,11 @@ t_bool	check_existence(char *path, char *filename)
 	struct dirent	*dp;
 
 	if (!(dirp = opendir(path)))
-		return (FALSE);
+	{
+		if (errno == ENOENT)
+			return (FALSE);
+		return (ERROR);
+	}
 	while ((dp = readdir(dirp)))
 	{
 		if (dp->d_namlen == ft_strlen(filename) &&
@@ -41,11 +45,7 @@ int		create_file(char *file, int mode, int chmod)
 		msg(strerror(errno), "\n", 0);
 		return (ERROR);
 	}
-	if (close(fd) < 0)
-	{
-		msg(strerror(errno), "\n", 0);
-		return (ERROR);
-	}
+	close(fd);
 	return (SUCCESSED);
 }
 

@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/20 17:33:31 by kdustin           #+#    #+#             */
-/*   Updated: 2021/03/24 22:08:29 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/03/25 14:22:37 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ int			error_handler(t_dlist **wordlist)
 	else if (peek_word(*wordlist) & LESS)
 		msg("`<'\n", 0, 0);
 	errno = EIO;
-	return (ERROR);
+	return (TOKEN_ERROR);
 }
 
 /*
@@ -44,10 +44,9 @@ t_bool		pipe_op(t_dlist **wordlist)
 		ft_dlst_removefirst(wordlist, delete_word_desc);
 		if (*wordlist == NULL)
 		{
-			errno = EIO;
 			msg("minishell: syntax error near unexpected token `newline'\n",
 																	NULL, NULL);
-			return (FALSE);
+			return (TOKEN_ERROR);
 		}
 		if (errno)
 			return (FALSE);
@@ -58,19 +57,22 @@ t_bool		pipe_op(t_dlist **wordlist)
 
 int			pipe_sequence(t_dlist **wordlist, t_cmdtbl **table)
 {
-	t_bool is_pipe;
+	int		error;
+	t_bool	is_pipe;
 
+	error = 0;
 	if (*wordlist != NULL)
 	{
-		command(wordlist, table);
-		if (!errno)
-			is_pipe = pipe_op(wordlist);
-		if (!errno && is_pipe)
-			pipe_sequence(wordlist, table);
-		if (errno)
-			return (ERROR);
+		error = command(wordlist, table);
+		if (!error)
+		{
+			if ((is_pipe = pipe_op(wordlist)) < 0)
+				error = TOKEN_ERROR;
+		}
+		if (!error && is_pipe)
+			error = pipe_sequence(wordlist, table);
 	}
-	return (SUCCESSED);
+	return (error ? error : SUCCESSED);
 }
 
 /*
@@ -81,6 +83,9 @@ int			pipe_sequence(t_dlist **wordlist, t_cmdtbl **table)
 
 int			list(t_dlist **wordlist, t_cmdtbl **table)
 {
+	int error;
+
+	error = 0;
 	if (*wordlist != NULL)
 	{
 		if (peek_word(*wordlist) & SEPARATOR || peek_word(*wordlist) & PIPE)
@@ -89,30 +94,33 @@ int			list(t_dlist **wordlist, t_cmdtbl **table)
 				msg("minishell: syntax error near unexpected token `;'", 0, 0);
 			if (peek_word(*wordlist) & PIPE)
 				msg("minishell: syntax error near unexpected token `|'", 0, 0);
-			errno = EIO;
-			return (ERROR);
+			return (TOKEN_ERROR);
 		}
-		pipe_sequence(wordlist, table);
+		error = pipe_sequence(wordlist, table);
 		if (peek_word(*wordlist) & SEPARATOR)
 			ft_dlst_removefirst(wordlist, delete_word_desc);
 	}
-	return (errno ? ERROR : SUCCESSED);
+	return (error ? error : SUCCESSED);
 }
 
 int			run_parser(t_dlist **wordlist, t_cmdtbl **table)
 {
+	int error;
+
+	error = 0;
 	if (*wordlist)
 	{
-		*table = create_cmdtbl();
-		if (!errno && *wordlist != NULL)
-			list(wordlist, table);
-		if (errno)
+		if (!(*table = create_cmdtbl()))
+			error = ALLOCATION_ERROR;
+		if (!error && *wordlist != NULL)
+			error = list(wordlist, table);
+		if (error)
 		{
 			ft_dlst_clear(wordlist, delete_word_desc);
 			*wordlist = NULL;
 			delete_cmdtbl(*table);
 			*table = NULL;
-			return (ERROR);
+			return (error);
 		}
 	}
 	return (SUCCESSED);

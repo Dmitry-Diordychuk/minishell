@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/20 14:07:28 by kdustin           #+#    #+#             */
-/*   Updated: 2021/03/24 20:29:33 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/03/25 16:39:50 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ int		read_loop(t_dlist **cur_record, t_env *env, t_dlist **history)
 	cur_pos = 0;
 	while (read(0, &ch, 1))
 		if (ch == '\x03')
-			signal_c_key(cur_record, history, &cur_pos);
+			error = signal_c_key(cur_record, history, &cur_pos);
 		else if (ch == CTRL_D && ((t_record*)(*cur_record)->content)->len == 0)
 		{
 			write(1, "exit", 5);
@@ -75,9 +75,9 @@ int		readline(char **output, t_dlist **history, t_env *env)
 	t_dlist	*cur_record;
 
 	if (apply_func(history, save_str))
-		return (ERROR);
+		return (ALLOCATION_ERROR);
 	if (add_record(history, ""))
-		return (ERROR);
+		return (ALLOCATION_ERROR);
 	cur_record = *history;
 	if (init_terminal_data())
 		return (ERROR);
@@ -93,8 +93,8 @@ int		readline(char **output, t_dlist **history, t_env *env)
 		return (ERROR);
 	ft_putchar('\n');
 	if (!(*output = get_result_copy(&cur_record, history)))
-		return (ERROR);
+		return (ALLOCATION_ERROR);
 	if (apply_func(history, reset_str))
-		return (ERROR);
+		return (ALLOCATION_ERROR);
 	return (SUCCESSED);
 }

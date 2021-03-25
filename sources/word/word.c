@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/20 11:17:03 by kdustin           #+#    #+#             */
-/*   Updated: 2021/03/24 20:41:54 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/03/25 11:44:02 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,16 +31,15 @@ int			add_word(t_dlist **word_list, char *word, int flags)
 	t_worddesc	*new_word_desc;
 	t_dlist		*new_list_elem;
 
-	errno = ENOMEM;
 	if (!(new_word_desc = create_word(word, flags)))
 		return (ERROR);
 	if (!(new_list_elem = ft_dlst_new(new_word_desc)))
 	{
 		free(new_word_desc);
+		errno = ENOMEM;
 		return (ERROR);
 	}
 	ft_dlst_append(word_list, new_list_elem);
-	errno = 0;
 	return (SUCCESSED);
 }
 
