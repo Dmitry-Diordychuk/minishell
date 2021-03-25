@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/21 17:47:11 by kdustin           #+#    #+#             */
-/*   Updated: 2021/03/24 23:26:28 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/03/25 18:59:57 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,8 @@ int	init_terminal_data(void)
 	char	*termtype;
 	int		success;
 
-	termtype = getenv("TERM");
+	//termtype = getenv("TERM");
+	termtype = "xterm-256color";
 	if (termtype == 0)
 	{
 		printf("Specify a terminal type with `setenv TERM <yourtype>'.\n");

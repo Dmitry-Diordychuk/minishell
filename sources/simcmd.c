@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/17 06:32:13 by kdustin           #+#    #+#             */
-/*   Updated: 2021/03/25 14:58:39 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/03/25 20:51:47 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,11 @@ t_simcmd	*create_simcmd(void)
 	new_simcmd->argv = NULL;
 	new_simcmd->argv_list = NULL;
 	new_simcmd->buildin = EXTERNAL;
+	new_simcmd->out_file = NULL;
+	new_simcmd->out_file_list = NULL;
+	new_simcmd->in_file = NULL;
+	new_simcmd->in_file_list = NULL;
+	new_simcmd->is_append = 0;
 	return (new_simcmd);
 }
 
@@ -47,6 +52,10 @@ void		delete_simcmd(void *content)
 	}
 	free(simcmd->argv);
 	ft_dlst_clear(&simcmd->argv_list, delete_word_desc);
+	free(simcmd->in_file);
+	ft_dlst_clear(&simcmd->in_file_list, delete_word_desc);
+	free(simcmd->out_file);
+	ft_dlst_clear(&simcmd->out_file_list, delete_word_desc);
 	free(simcmd);
 }
 

@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/17 12:13:50 by kdustin           #+#    #+#             */
-/*   Updated: 2021/03/25 16:23:55 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/03/25 20:50:13 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,17 +88,24 @@ int			init_redirection_field(char **ret_name, t_dlist **file_tokens,
 
 int			expand_redirection(t_cmdtbl **table, t_env *env)
 {
-	int error;
+	int			error;
+	t_diter		iter;
+	t_simcmd	*simcmd;
 
 	error = 0;
-	while ((*table)->in_file_list != NULL)
-		if ((error = init_redirection_field(&(*table)->in_file,
-		&(*table)->in_file_list, LESS, env)))
-			return (error);
-	while ((*table)->out_file_list != NULL)
-		if ((error = init_redirection_field(&(*table)->out_file,
-		&(*table)->out_file_list, GREAT, env)))
-			return (error);
+	ft_diter_init(&(*table)->rows, &iter);
+	while (!error && ft_diter_more(&iter))
+	{
+		simcmd = ft_diter_getnext(&iter);
+		while (simcmd->in_file_list != NULL)
+			if ((error = init_redirection_field(&simcmd->in_file,
+			&simcmd->in_file_list, LESS, env)))
+				return (error);
+		while (simcmd->out_file_list != NULL)
+			if ((error = init_redirection_field(&simcmd->out_file,
+			&simcmd->out_file_list, GREAT, env)))
+				return (error);
+	}
 	return (SUCCESSED);
 }
 

@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/08 06:46:16 by kdustin           #+#    #+#             */
-/*   Updated: 2021/03/25 14:37:17 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/03/25 20:51:19 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,11 +26,6 @@ t_cmdtbl	*create_cmdtbl(void)
 		return (NULL);
 	}
 	new_cmd->rows = NULL;
-	new_cmd->out_file = NULL;
-	new_cmd->out_file_list = NULL;
-	new_cmd->in_file = NULL;
-	new_cmd->in_file_list = NULL;
-	new_cmd->is_append = 0;
 	return (new_cmd);
 }
 
@@ -43,10 +38,6 @@ void		delete_cmdtbl(t_cmdtbl *cmdtbl)
 	if (cmdtbl == NULL)
 		return ;
 	ft_dlst_clear(&cmdtbl->rows, delete_simcmd);
-	free(cmdtbl->in_file);
-	ft_dlst_clear(&cmdtbl->in_file_list, delete_word_desc);
-	free(cmdtbl->out_file);
-	ft_dlst_clear(&cmdtbl->out_file_list, delete_word_desc);
 	free(cmdtbl);
 }
 

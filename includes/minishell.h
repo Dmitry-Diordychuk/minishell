@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/16 17:02:02 by kdustin           #+#    #+#             */
-/*   Updated: 2021/03/25 18:51:35 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/03/25 21:14:27 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,8 +33,6 @@
 # define SIGMOD_DEFAULT	0
 # define SIGMOD_SHELL	1
 # define SIGMOD_WAIT	2
-
-int						g_exit_status;
 
 void					set_signals(int mode);
 
@@ -197,6 +195,11 @@ typedef struct			s_simcmd
 	char				**argv;
 	t_dlist				*argv_list;
 	int					buildin;
+	char				*out_file;
+	t_dlist				*out_file_list;
+	char				*in_file;
+	t_dlist				*in_file_list;
+	t_bool				is_append;
 }						t_simcmd;
 
 # define EXTERNAL		0
@@ -220,11 +223,6 @@ int						add_arg(t_simcmd *simcmd, char *arg);
 typedef struct			s_cmdtbl
 {
 	t_dlist				*rows;
-	t_bool				is_append;
-	char				*out_file;
-	t_dlist				*out_file_list;
-	char				*in_file;
-	t_dlist				*in_file_list;
 }						t_cmdtbl;
 
 t_cmdtbl				*create_cmdtbl();
@@ -251,10 +249,9 @@ typedef struct			s_fd
 
 int						execute(t_cmdtbl *table, t_env *env);
 
-int						setup_fd(t_bool is_last, t_fd *fd, char *out_file,
-																int is_append);
+int						setup_fd(t_bool is_last, t_fd *fd, t_simcmd *simcmd);
 int						restore_fd(t_fd *fd);
-int						init_fd(t_fd *fd, char *in_file);
+int						init_fd(t_fd *fd);
 
 /*
 **	Parser
@@ -268,8 +265,8 @@ int						command(t_dlist **wordlist, t_cmdtbl **table);
 int						error_handler(t_dlist **wordlist);
 
 t_bool					pass_words(t_dlist **wordlist, t_dlist **list);
-int						io_redirect(t_dlist **wordlist, t_cmdtbl **table);
-int						filename(t_dlist **wordlist, t_cmdtbl **table);
+int						io_redirect(t_dlist **wordlist, t_simcmd *simcmd);
+int						filename(t_dlist **wordlist, t_simcmd *simcmd);
 
 /*
 **	Buldin

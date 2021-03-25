@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/24 20:06:54 by kdustin           #+#    #+#             */
-/*   Updated: 2021/03/25 14:38:06 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/03/25 22:12:04 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,8 @@ int			cmd_prefix(t_dlist **wordlist, t_cmdtbl **table)
 	int	error;
 
 	error = 0;
-	if ((is_redirect = io_redirect(wordlist, table)) < 0)
+	if ((is_redirect = io_redirect(wordlist,
+									ft_dlst_getlast_data((*table)->rows))) < 0)
 	{
 		if (errno == ENOMEM)
 			error = ALLOCATION_ERROR;
@@ -77,7 +78,8 @@ int			cmd_suffix(t_dlist **wordlist, t_cmdtbl **table)
 	is_arg = 0;
 	if (*wordlist)
 	{
-		if ((is_redirect = io_redirect(wordlist, table)) < 0)
+		if ((is_redirect = io_redirect(wordlist,
+									ft_dlst_getlast_data((*table)->rows))) < 0)
 		{
 			if (errno == ENOMEM)
 				error = ALLOCATION_ERROR;

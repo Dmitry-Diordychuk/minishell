@@ -6,18 +6,18 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/17 11:18:59 by kdustin           #+#    #+#             */
-/*   Updated: 2021/03/24 23:25:12 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/03/26 00:43:23 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int		wait_after_fork(t_env *env)
+int		wait_after_fork(t_env *env, int ret)
 {
 	int		status;
 
 	set_signals(SIGMOD_WAIT);
-	if (wait(&status) == -1)
+	if (waitpid(ret, &status, WNOHANG | WUNTRACED) == -1)
 	{
 		ft_putendl_fd(strerror(errno), 1);
 		exit(free_data(1));
@@ -31,10 +31,12 @@ int		wait_after_fork(t_env *env)
 			write(1, "Quit: 3", 7);
 			env->last_return = 131;
 		}
-		write(1, "\n", 1);
+		write(1, "T", 1);
 	}
-	else
+	else if (WIFEXITED(status))
 		env->last_return = WEXITSTATUS(status);
+	else
+		return (ERROR);
 	return (SUCCESSED);
 }
 
@@ -44,8 +46,6 @@ int		execute_fork(char *filename, char **argv, t_env *env)
 
 	if ((ret = fork()) < 0)
 		msg(strerror(errno), "\n", 0);
-	else if (ret > 0)
-		wait_after_fork(env);
 	else if (ret == 0)
 	{
 		set_signals(SIGMOD_DEFAULT);
@@ -53,6 +53,8 @@ int		execute_fork(char *filename, char **argv, t_env *env)
 			msg(strerror(errno), "\n", 0);
 		exit(1);
 	}
+	else if (ret > 0)
+		wait_after_fork(env, ret);
 	free(filename);
 	return (ret);
 }
@@ -91,8 +93,7 @@ int		execute_simcmds(t_cmdtbl *table, t_env *env, t_fd *fd, int *pid)
 	ft_diter_init(&table->rows, &iter);
 	while (ft_diter_more(&iter) && (simcmd = ft_diter_getnext(&iter)))
 	{
-		if (
-		setup_fd(!ft_diter_more(&iter), fd, table->out_file, table->is_append))
+		if (setup_fd(!ft_diter_more(&iter), fd, simcmd))
 			return (ERROR);
 		*pid = 0;
 		if (simcmd->buildin == EXTERNAL &&
@@ -115,7 +116,7 @@ int		execute(t_cmdtbl *table, t_env *env)
 	int		error;
 
 	pid = 0;
-	if (init_fd(&fd, table->in_file))
+	if (init_fd(&fd))
 	{
 		msg(strerror(errno), "\n", 0);
 		return (ERROR);

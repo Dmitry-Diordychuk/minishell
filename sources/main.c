@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/16 17:02:09 by kdustin           #+#    #+#             */
-/*   Updated: 2021/03/25 18:25:39 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/03/26 00:38:52 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,6 @@ int		run_command(t_data *data)
 {
 	int error;
 
-	data->env->last_return = 0;
 	data->wordlist = NULL;
 	if ((error = run_lexer(&data->wordlist, data->input_line)))
 		return (error);
@@ -90,13 +89,9 @@ void	data_container(int set_get, t_data *ret_data)
 	static t_data data;
 
 	if (set_get == SET)
-	{
 		data = *ret_data;
-	}
 	else
-	{
 		*ret_data = data;
-	}
 }
 
 int		main(int argc, char **argv, char **envp)
