@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/24 20:38:30 by kdustin           #+#    #+#             */
-/*   Updated: 2021/03/26 20:52:39 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/03/26 23:02:49 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,13 +81,15 @@ char	*glue_dquote(t_dlist **wordlist, char **envp, int *last_return)
 		if (!(*wordlist) || peek_word(*wordlist) & CLOSED)
 		{
 			if (peek_word(*wordlist) & DOLLAR)
-				error = wordjoin(&dq_glued, get_env_word(wordlist, envp, last_return));
+				error = wordjoin(&dq_glued, get_env_word(wordlist, envp,
+																last_return));
 			else
 				error = wordjoin(&dq_glued, pop_word(wordlist));
 			break ;
 		}
 		if (peek_word(*wordlist) & DOLLAR)
-			error = wordjoin(&dq_glued, get_env_word(wordlist, envp, last_return));
+			error = wordjoin(&dq_glued, get_env_word(wordlist, envp,
+																last_return));
 		else
 			error = wordjoin(&dq_glued, pop_word(wordlist));
 	}
