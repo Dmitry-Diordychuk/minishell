@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/17 05:25:55 by kdustin           #+#    #+#             */
-/*   Updated: 2021/03/26 15:23:35 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/03/26 17:47:09 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,10 @@ char	**change_env(char *a, char **e, int z, int len)
 	while (e[++i])
 	{
 		if (!ft_strncmp(e[i], a, z) && e[i][z] == '=')
-			ne[i] = a;
+		{
+			if (!(ne[i] = ft_strdup(a)))
+				return (ar_free(ne, len));
+		}
 		else
 		{
 			if (!(ne[i] = ft_strdup(e[i])))
@@ -110,10 +113,12 @@ int		buildin_export(int argc, char **argv, t_data *env)
 	}
 	else
 	{
-		s = ft_strdup("OLDPWD=");
+		if (!(s = ft_strdup("OLDPWD=")))
+			return (ERROR);
 		env->envs = buildin_export2(s, env->envs, 6);
 		export_sort_print(env->envs);
 		env->envs = buildin_unset2(s, env->envs, 6);
+		free(s);
 	}
 	return (errno ? ERROR : SUCCESSED);
 }

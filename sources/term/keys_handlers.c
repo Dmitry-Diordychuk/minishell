@@ -6,13 +6,14 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/21 17:45:26 by kdustin           #+#    #+#             */
-/*   Updated: 2021/03/25 16:40:28 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/03/26 16:37:14 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	signal_c_key(t_dlist **cur_record, t_dlist **history, int *cur_pos)
+int	signal_c_key(t_dlist **cur_record, t_dlist **history, int *cur_pos,
+																t_data *data)
 {
 	if (apply_func(history, reset_str))
 		return (ALLOCATION_ERROR);
@@ -32,6 +33,7 @@ int	signal_c_key(t_dlist **cur_record, t_dlist **history, int *cur_pos)
 	if (tputs(tgetstr("dl", 0), 1, ft_putchar))
 		return (ERROR);
 	ft_putstr_fd("minishell: ", 1);
+	data->last_return = 1;
 	return (SUCCESSED);
 }
 

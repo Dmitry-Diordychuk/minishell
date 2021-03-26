@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/07 07:22:16 by kdustin           #+#    #+#             */
-/*   Updated: 2021/03/25 18:46:09 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/03/26 17:07:05 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,31 +117,32 @@ int	double_qoute_dollar(t_dlist **wordlist, char **input_line, int *attach,
 	return (SUCCESSED);
 }
 
-int	recognize_double_quote(t_dlist **wordlist, char **input_line,
+int	recognize_double_quote(t_dlist **wordlist, char **inputline,
 															int *attach)
 {
 	char	*word;
 	t_bool	dollar_flag;
 	int		error;
 
-	error = 0;
 	dollar_flag = FALSE;
 	word = NULL;
-	while (**input_line != '\"' && !error)
-		if (**input_line == '\0')
+	error = 0;
+	while (**inputline != '\"' && !error)
+		if (**inputline == '\0')
 			error = TOKEN_ERROR;
-		else if (**input_line == '\\' && *(*input_line + 1) == '$')
-			error = skip_dollar(input_line, &word);
-		else if (**input_line == '$' && (dollar_flag = TRUE))
-			error = double_qoute_dollar(wordlist, input_line, attach, &word);
-		else if (!(error = add_letter(&word, **input_line)))
-			(*input_line)++;
+		else if (**inputline == '\\' && *(*inputline + 1) == '$')
+			error = skip_dollar(inputline, &word);
+		else if (**inputline == '\\' && ft_strchr("\\\"\'", *(*inputline + 1)))
+			handle_backslash(&word, inputline);
+		else if (**inputline == '$' && (dollar_flag = TRUE))
+			error = double_qoute_dollar(wordlist, inputline, attach, &word);
+		else if (!(error = add_letter(&word, **inputline)))
+			(*inputline)++;
 	if (!error && !dollar_flag && !(word) && !(word = ft_strdup("")))
 		error = ALLOCATION_ERROR;
 	if (!error && word)
 		error = add_word(wordlist, word, 0xa40 | *attach);
-	if (error)
-		free(word);
+	error ? free(word) : TRUE;
 	turn_on(attach);
 	return (error ? error : SUCCESSED);
 }

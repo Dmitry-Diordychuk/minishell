@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/18 06:06:46 by kdustin           #+#    #+#             */
-/*   Updated: 2021/03/25 18:46:33 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/03/26 17:00:49 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,10 +25,7 @@ int			handle_backslash(char **word, char **input_line)
 {
 	(*input_line)++;
 	if (**input_line == '\0')
-	{
-		msg("minishell: syntax error near unexpected token `newline'\n", 0, 0);
 		return (TOKEN_ERROR);
-	}
 	if (add_letter(word, **input_line) < 0)
 		return (ALLOCATION_ERROR);
 	(*input_line)++;

@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/20 14:07:28 by kdustin           #+#    #+#             */
-/*   Updated: 2021/03/26 15:34:34 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/03/26 16:36:49 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ char	*get_result_copy(t_dlist **cur_record, t_dlist **history)
 	return (output);
 }
 
-int		read_loop(t_dlist **cur_record, t_data *env, t_dlist **history)
+int		read_loop(t_dlist **cur_record, t_data *data, t_dlist **history)
 {
 	char	ch;
 	int		cur_pos;
@@ -40,12 +40,12 @@ int		read_loop(t_dlist **cur_record, t_data *env, t_dlist **history)
 	cur_pos = 0;
 	while (read(0, &ch, 1))
 		if (ch == '\x03')
-			error = signal_c_key(cur_record, history, &cur_pos);
+			error = signal_c_key(cur_record, history, &cur_pos, data);
 		else if (ch == CTRL_D && ((t_record*)(*cur_record)->content)->len == 0)
 		{
 			write(1, "exit", 5);
-			env->last_return = 0;
-			env->is_exit = TRUE;
+			data->last_return = 0;
+			data->is_exit = TRUE;
 			break ;
 		}
 		else if (ch == '\e')
@@ -70,7 +70,7 @@ int		apply_func(t_dlist **history, int (*fun)(t_record *record))
 	return (SUCCESSED);
 }
 
-int		readline(char **output, t_dlist **history, t_data *env)
+int		readline(char **output, t_dlist **history, t_data *data)
 {
 	t_dlist	*cur_record;
 
@@ -87,7 +87,7 @@ int		readline(char **output, t_dlist **history, t_data *env)
 		return (ERROR);
 	if (tputs(tgetstr("sc", 0), 1, ft_putchar))
 		return (ERROR);
-	if (read_loop(&cur_record, env, history))
+	if (read_loop(&cur_record, data, history))
 		return (ERROR);
 	if (set_terminal_options(OFF))
 		return (ERROR);

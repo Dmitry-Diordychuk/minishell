@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/16 17:02:02 by kdustin           #+#    #+#             */
-/*   Updated: 2021/03/26 15:28:43 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/03/26 16:37:47 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -142,7 +142,7 @@ int						special_keys(t_dlist **cur_record, int *cur_pos);
 int						up_down_arrows(t_dlist **currecord, int *curpos, int d);
 int						plain_keys(t_dlist **cur_record, int *cur_pos, char ch);
 int						signal_c_key(t_dlist **cur_record, t_dlist **history,
-																int *cur_pos);
+													int *cur_pos, t_data *data);
 int						left_right_keys(t_dlist **cur_record, int *cur_pos,
 																int direction);
 
