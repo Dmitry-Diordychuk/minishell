@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/17 05:25:47 by kdustin           #+#    #+#             */
-/*   Updated: 2021/03/26 15:29:52 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/03/26 19:08:43 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,10 +42,10 @@ int			ft_atoi_exit(const char *nptr, int *e)
 
 int			buildin_exit_error(char *arvg)
 {
-	write(1, "minishell: exit: ", 17);
-	write(1, arvg, ft_strlen(arvg));
-	write(1, ": numeric argument required\n", 28);
-	return (2);
+	write(2, "minishell: exit: ", 17);
+	write(2, arvg, ft_strlen(arvg));
+	write(2, ": numeric argument required\n", 28);
+	return (255);
 }
 
 int			buildin_exit3(int i)
@@ -61,7 +61,7 @@ int			buildin_exit2(int argc, t_data *env, int ii)
 {
 	if (argc > 2)
 	{
-		write(1, "minishell: exit: too many arguments\n", 36);
+		write(2, "minishell: exit: too many arguments\n", 36);
 		env->is_exit = FALSE;
 		return (1);
 	}
@@ -76,7 +76,7 @@ int			buildin_exit(int argc, char **argv, t_data *env)
 	char				*s;
 	int					e;
 
-	write(1, "exit\n", 5);
+	write(2, "exit\n", 5);
 	if (argc < 2)
 		return (buildin_exit3(env->last_return));
 	else

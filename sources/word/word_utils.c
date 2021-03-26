@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/24 20:38:30 by kdustin           #+#    #+#             */
-/*   Updated: 2021/03/25 14:51:07 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/03/26 20:52:39 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ char	*get_env_word(t_dlist **wordlist, char **envp, int *last_return)
 	else
 		value = find_env_var(envp, name + 1);
 	free(name);
-	while (!errno && *wordlist != NULL && peek_word(*wordlist) & ATTACH &&
+	while (*wordlist != NULL && peek_word(*wordlist) & ATTACH &&
 									peek_word(*wordlist) & DOLLAR)
 	{
 		name = pop_word(wordlist);
@@ -72,26 +72,28 @@ char	*get_env_word(t_dlist **wordlist, char **envp, int *last_return)
 char	*glue_dquote(t_dlist **wordlist, char **envp, int *last_return)
 {
 	char	*dq_glued;
+	int		error;
 
+	error = 0;
 	dq_glued = NULL;
-	while (!errno && peek_word(*wordlist) & DQUOTE)
+	while (peek_word(*wordlist) & DQUOTE)
 	{
 		if (!(*wordlist) || peek_word(*wordlist) & CLOSED)
 		{
 			if (peek_word(*wordlist) & DOLLAR)
-				wordjoin(&dq_glued, get_env_word(wordlist, envp, last_return));
+				error = wordjoin(&dq_glued, get_env_word(wordlist, envp, last_return));
 			else
-				wordjoin(&dq_glued, pop_word(wordlist));
+				error = wordjoin(&dq_glued, pop_word(wordlist));
 			break ;
 		}
 		if (peek_word(*wordlist) & DOLLAR)
-			wordjoin(&dq_glued, get_env_word(wordlist, envp, last_return));
+			error = wordjoin(&dq_glued, get_env_word(wordlist, envp, last_return));
 		else
-			wordjoin(&dq_glued, pop_word(wordlist));
+			error = wordjoin(&dq_glued, pop_word(wordlist));
 	}
-	if (errno)
+	if (error)
 		free(dq_glued);
-	return (errno ? NULL : dq_glued);
+	return (error ? NULL : dq_glued);
 }
 
 char	*glue_words(t_dlist **wordlist, char **envp, int *last_return)

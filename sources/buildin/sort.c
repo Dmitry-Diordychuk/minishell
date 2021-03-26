@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/03 18:35:12 by ebarra            #+#    #+#             */
-/*   Updated: 2021/03/20 21:00:15 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/03/26 20:36:48 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,14 +89,12 @@ static void		print_export_woo(void *content)
 		return ;
 	i = ft_strchr_int(s, '=');
 	if (!(s1 = ft_substr(s, 0, i)))
-		errno = ENOMEM;
+		return ;
 	if (!(s2 = ft_substr(s, i + 1, ft_strlen(s))))
 	{
 		free(s1);
-		errno = ENOMEM;
-	}
-	if (errno)
 		return ;
+	}
 	print_declare_x(s1, s2);
 	free(s1);
 	free(s2);

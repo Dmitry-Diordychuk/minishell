@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/16 17:02:09 by kdustin           #+#    #+#             */
-/*   Updated: 2021/03/26 15:40:02 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/03/26 20:50:19 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 int		check_command_argument(char **input_line, int argc, char **argv)
 {
 	*input_line = NULL;
-	if (!errno && argc > 1 && !ft_strcmp(argv[1], "-c"))
+	if (argc > 1 && !ft_strcmp(argv[1], "-c"))
 	{
 		if (argc < 3)
 		{
@@ -41,7 +41,7 @@ int		run_command(t_data *data)
 	while (data->wordlist != NULL)
 	{
 		data->table = NULL;
-		if ((error = run_parser(&data->wordlist, &data->table)))
+		if ((error = run_parser(&(data->wordlist), &data->table)))
 			return (error);
 		if ((error = run_expansion(&data->table, data)))
 			return (error);

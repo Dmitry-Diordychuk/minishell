@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   array.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kdustin <kdustin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/17 15:43:40 by kdustin           #+#    #+#             */
-/*   Updated: 2021/03/16 18:58:42 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/03/26 20:48:30 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,6 @@ char	**enlarge(int len, char **a, char *new_arg)
 
 	if (!(result_args = (char**)malloc(sizeof(char*) * (len + 2))))
 	{
-		errno = ENOMEM;
 		free_array(a);
 		return (NULL);
 	}

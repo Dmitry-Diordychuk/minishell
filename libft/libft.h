@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/05/04 18:50:18 by kdustin           #+#    #+#             */
-/*   Updated: 2021/03/24 22:08:48 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/03/26 20:48:50 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,6 @@
 
 # include <stdlib.h>
 # include <unistd.h>
-# include <errno.h>
 # include "get_next_line.h"
 
 # define TRUE 1

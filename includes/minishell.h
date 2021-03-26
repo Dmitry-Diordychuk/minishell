@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/16 17:02:02 by kdustin           #+#    #+#             */
-/*   Updated: 2021/03/26 16:37:47 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/03/26 20:49:38 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,6 @@
 # include "libft.h"
 # include <stdlib.h>
 # include <fcntl.h>
-# include <errno.h>
 # include <sys/stat.h>
 # include <dirent.h>
 # include <limits.h>
@@ -26,6 +25,7 @@
 # include <sys/ioctl.h>
 # include <string.h>
 # include <signal.h>
+# include <errno.h>
 
 /*
 ** Signal

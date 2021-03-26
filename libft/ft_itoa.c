@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_itoa.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kdustin <kdustin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/05/11 14:45:53 by kdustin           #+#    #+#             */
-/*   Updated: 2021/03/16 16:30:07 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/03/26 20:47:36 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,22 +51,21 @@ char		*ft_itoa(int n)
 	i = 0;
 	input = n;
 	if (!(result = (char*)ft_calloc(getlen(n) + isngtive(n) + 1, sizeof(char))))
-		errno = ENOMEM;
-	if (!errno && n < 0)
+		return (NULL);
+	if (n < 0)
 	{
 		input = input * (-1);
 		result[0] = '-';
 		i = getlen(n);
 	}
-	else if (!errno)
+	else
 		i = getlen(n) - 1;
-	if (!errno)
-		result[i + 1] = '\0';
-	while (!errno && i >= isngtive(n))
+	result[i + 1] = '\0';
+	while (i >= isngtive(n))
 	{
 		result[i] = input % 10 + '0';
 		input = input / 10;
 		i--;
 	}
-	return (errno ? NULL : result);
+	return (result);
 }

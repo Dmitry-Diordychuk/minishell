@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/20 17:33:31 by kdustin           #+#    #+#             */
-/*   Updated: 2021/03/25 18:06:34 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/03/26 20:38:09 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,8 +48,6 @@ t_bool		pipe_op(t_dlist **wordlist)
 																	NULL, NULL);
 			return (TOKEN_ERROR);
 		}
-		if (errno)
-			return (FALSE);
 		return (TRUE);
 	}
 	return (FALSE);

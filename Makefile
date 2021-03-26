@@ -6,7 +6,7 @@
 #    By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/12/16 13:35:35 by kdustin           #+#    #+#              #
-#    Updated: 2021/03/26 18:50:24 by kdustin          ###   ########.fr        #
+#    Updated: 2021/03/26 19:33:45 by kdustin          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -23,7 +23,7 @@ LIBFT_DIR := libft
 LDFLAGS := -L$(LIBFT_DIR)
 LDLIBS := -lft -ltermcap
 
-CFLAGS := -Wall -Werror -Wextra
+CFLAGS := -Wall -Werror -Wextra -g
 
 SRCS_BUILDIN := $(addprefix buildin/,			cd.c		\
 												echo.c		\

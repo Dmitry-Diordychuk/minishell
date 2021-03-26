@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/17 05:25:55 by kdustin           #+#    #+#             */
-/*   Updated: 2021/03/26 17:47:09 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/03/26 20:50:56 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,5 +120,5 @@ int		buildin_export(int argc, char **argv, t_data *env)
 		env->envs = buildin_unset2(s, env->envs, 6);
 		free(s);
 	}
-	return (errno ? ERROR : SUCCESSED);
+	return (SUCCESSED);
 }

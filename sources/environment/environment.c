@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/20 22:27:20 by kdustin           #+#    #+#             */
-/*   Updated: 2021/03/26 15:30:19 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/03/26 20:51:25 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,16 +22,14 @@ int		init_env(char **envp, t_data *env)
 	while (envp[len] != NULL)
 		len++;
 	if (!(env->envs = (char**)calloc(len + 1, sizeof(char*))))
-		errno = ENOMEM;
-	i = -1;
-	while (!errno && ++i < len)
-		if (!(env->envs[i] = ft_strdup(envp[i])))
-			errno = ENOMEM;
-	if (errno)
-	{
-		free_array(env->envs);
 		return (ERROR);
-	}
+	i = -1;
+	while (++i < len)
+		if (!(env->envs[i] = ft_strdup(envp[i])))
+		{
+			free_array(env->envs);
+			return (ERROR);
+		}
 	env->last_return = 0;
 	env->is_exit = FALSE;
 	return (SUCCESSED);

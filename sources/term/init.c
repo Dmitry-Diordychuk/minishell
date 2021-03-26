@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/21 17:47:11 by kdustin           #+#    #+#             */
-/*   Updated: 2021/03/26 14:56:02 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/03/26 19:46:24 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,22 +45,20 @@ int	set_terminal_options(int on_off_define)
 	if (on_off_define == ON)
 	{
 		if (!isatty(0))
-			errno = ENXIO;
-		if (!errno && tcgetattr(0, &tty) < 0)
-			errno = ENXIO;
-		if (errno)
+			return (ERROR);
+		if (tcgetattr(0, &tty) < 0)
 			return (ERROR);
 		savetty = tty;
 		tty.c_lflag &= ~(ECHO | ICANON | ISIG);
 		tty.c_cc[VMIN] = 1;
 		tty.c_cc[VTIME] = 0;
-		if (!errno && tcsetattr(0, TCSANOW, &tty) < 0)
-			errno = ENXIO;
+		if (tcsetattr(0, TCSANOW, &tty) < 0)
+			return (ERROR);
 	}
 	else if (on_off_define == OFF)
 	{
 		if (tcsetattr(0, TCSANOW, &savetty) < 0)
-			errno = ENXIO;
+			return (ERROR);
 	}
-	return (errno ? ERROR : SUCCESSED);
+	return (SUCCESSED);
 }

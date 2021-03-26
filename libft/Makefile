@@ -6,7 +6,7 @@
 #    By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/05/06 16:34:49 by kdustin           #+#    #+#              #
-#    Updated: 2021/03/26 18:50:42 by kdustin          ###   ########.fr        #
+#    Updated: 2021/03/26 20:11:36 by kdustin          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -105,7 +105,7 @@ OBJS =		ft_memset.o					\
 			ft_putchar.o
 
 NAME = libft.a
-CFLAGS = -Wall -Wextra -Werror
+CFLAGS = -Wall -Wextra -Werror -g
 
 all: $(NAME)
 

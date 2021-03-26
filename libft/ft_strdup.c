@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/05/10 02:07:22 by kdustin           #+#    #+#             */
-/*   Updated: 2021/03/21 21:25:26 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/03/26 20:48:21 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,10 +26,7 @@ char	*ft_strdup(const char *s1)
 
 	len = ft_strlen(s1);
 	if (!(p = ft_calloc(len + 1, sizeof(char))))
-	{
-		errno = ENOMEM;
 		return (NULL);
-	}
 	i = 0;
 	while (i < len)
 	{

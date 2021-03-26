@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/24 20:04:25 by kdustin           #+#    #+#             */
-/*   Updated: 2021/03/25 20:26:48 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/03/26 20:52:19 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,14 +14,16 @@
 
 t_bool		pass_words(t_dlist **wordlist, t_dlist **list)
 {
-	t_bool is_arg;
+	t_bool	is_arg;
+	t_dlist	*pop;
 
 	is_arg = FALSE;
 	while (*wordlist && peek_word(*wordlist) & WORD)
 	{
 		is_arg = TRUE;
-		ft_dlst_append(list, ft_dlst_popfirst_elem(wordlist));
-		if (*wordlist && !(peek_word(*wordlist) & ATTACH))
+		pop = ft_dlst_popfirst_elem(wordlist);
+		ft_dlst_append(list, pop);
+		if (wordlist && *wordlist && !(peek_word(*wordlist) & ATTACH))
 			break ;
 	}
 	return (is_arg);
@@ -79,10 +81,7 @@ int			filename(t_dlist **wordlist, t_simcmd *simcmd)
 		error = add_word(&name, NULL, FILE_SEPARATOR);
 	}
 	else
-	{
-		errno = EIO;
 		error = TOKEN_ERROR;
-	}
 	if (!error)
 		init_redirection_fields(simcmd, name, io_operator);
 	if (error)
