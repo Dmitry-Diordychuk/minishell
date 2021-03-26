@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/17 05:23:10 by kdustin           #+#    #+#             */
-/*   Updated: 2021/03/26 15:29:38 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/03/26 22:55:17 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,15 +16,15 @@ int			error_buildin_cd(char *a, char *s_oldpwd, char *s_pwd, int q)
 {
 	if (q == 1)
 	{
-		write(1, "minishell: cd: error", 20);
+		write(2, "minishell: cd: error", 20);
 		free(s_oldpwd);
 		free(s_pwd);
 	}
 	else
 	{
-		write(1, "minishell: cd: ", 15);
-		write(1, a, ft_strlen(a));
-		write(1, ": no such file or directory\n", 28);
+		write(2, "minishell: cd: ", 15);
+		write(2, a, ft_strlen(a));
+		write(2, ": no such file or directory\n", 28);
 		free(s_oldpwd);
 		free(s_pwd);
 	}
@@ -43,14 +43,8 @@ int			buildin_cd3(char *s_pwd, char *s_oldpwd, t_data *env)
 	ss[2] = s_oldpwd;
 	ss[3] = NULL;
 	ret = buildin_export(3, ss, env);
-	if (ret > 0)
-	{
-		free(ss[2]);
-		free(ss[1]);
-		free(ss[0]);
-		free(ss);
-		return (1);
-	}
+	free(ss[2]);
+	free(ss[1]);
 	free(ss[0]);
 	free(ss);
 	return (ret);
@@ -69,7 +63,9 @@ int			buildin_cd2(char *a, char *s_oldpwd, t_data *env)
 	if (ret < 0)
 		return (error_buildin_cd(a, s_oldpwd, s_pwd, 0));
 	else
+	{
 		return (buildin_cd3(s_pwd, s_oldpwd, env));
+	}
 	return (0);
 }
 
@@ -87,7 +83,7 @@ int			buildin_cd(int argc, char **argv, t_data *env)
 	}
 	else if (argc > 2)
 	{
-		write(1, "minishell: cd: too many arguments\n", 34);
+		write(2, "minishell: cd: too many arguments\n", 34);
 		return (1);
 	}
 	else

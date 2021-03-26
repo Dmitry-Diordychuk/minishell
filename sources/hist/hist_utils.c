@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/24 21:00:05 by kdustin           #+#    #+#             */
-/*   Updated: 2021/03/24 21:05:19 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/03/26 22:29:57 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,7 +87,7 @@ void	record_deletechar(t_record *record, int cur_pos)
 	int i;
 
 	if (cur_pos == record->len)
-		record->str[cur_pos] = '\0';
+		record->str[cur_pos - 1] = '\0';
 	else
 	{
 		i = cur_pos;
