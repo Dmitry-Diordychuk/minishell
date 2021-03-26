@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/20 14:07:28 by kdustin           #+#    #+#             */
-/*   Updated: 2021/03/25 20:37:21 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/03/26 15:34:34 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ char	*get_result_copy(t_dlist **cur_record, t_dlist **history)
 	return (output);
 }
 
-int		read_loop(t_dlist **cur_record, t_env *env, t_dlist **history)
+int		read_loop(t_dlist **cur_record, t_data *env, t_dlist **history)
 {
 	char	ch;
 	int		cur_pos;
@@ -70,7 +70,7 @@ int		apply_func(t_dlist **history, int (*fun)(t_record *record))
 	return (SUCCESSED);
 }
 
-int		readline(char **output, t_dlist **history, t_env *env)
+int		readline(char **output, t_dlist **history, t_data *env)
 {
 	t_dlist	*cur_record;
 

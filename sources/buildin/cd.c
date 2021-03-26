@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/17 05:23:10 by kdustin           #+#    #+#             */
-/*   Updated: 2021/03/24 21:04:30 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/03/26 15:29:38 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ int			error_buildin_cd(char *a, char *s_oldpwd, char *s_pwd, int q)
 	return (1);
 }
 
-int			buildin_cd3(char *s_pwd, char *s_oldpwd, t_env *env)
+int			buildin_cd3(char *s_pwd, char *s_oldpwd, t_data *env)
 {
 	char	**ss;
 	int		ret;
@@ -56,7 +56,7 @@ int			buildin_cd3(char *s_pwd, char *s_oldpwd, t_env *env)
 	return (ret);
 }
 
-int			buildin_cd2(char *a, char *s_oldpwd, t_env *env)
+int			buildin_cd2(char *a, char *s_oldpwd, t_data *env)
 {
 	int		ret;
 	char	*buffer;
@@ -73,7 +73,7 @@ int			buildin_cd2(char *a, char *s_oldpwd, t_env *env)
 	return (0);
 }
 
-int			buildin_cd(int argc, char **argv, t_env *env)
+int			buildin_cd(int argc, char **argv, t_data *env)
 {
 	char	*home;
 	char	*oldpwd;

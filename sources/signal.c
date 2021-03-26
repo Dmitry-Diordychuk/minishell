@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/03 18:35:12 by ebarra            #+#    #+#             */
-/*   Updated: 2021/03/25 20:37:42 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/03/26 15:37:24 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,10 +20,10 @@ static void	set_signal_for_shell(int signal_code)
 	{
 		data_container(GET, &data);
 		write(1, "\nminishell: ", 12);
-		data.env->last_return = 0;
+		data.last_return = 0;
 	}
 	if (signal_code == SIGQUIT)
-		data.env->last_return = 0;
+		data.last_return = 0;
 }
 
 static void	set_signal_for_wait(int signal_code)

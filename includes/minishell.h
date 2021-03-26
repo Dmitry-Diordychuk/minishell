@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/16 17:02:02 by kdustin           #+#    #+#             */
-/*   Updated: 2021/03/25 21:14:27 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/03/26 15:28:43 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@
 # include <termios.h>
 # include <sys/ioctl.h>
 # include <string.h>
+# include <signal.h>
 
 /*
 ** Signal
@@ -65,17 +66,43 @@ int						record_insertchar(t_record *record, int curpos, char c);
 void					record_deletechar(t_record *record, int cur_pos);
 
 /*
+** Command table structures.
+*/
+
+typedef struct			s_cmdtbl
+{
+	t_dlist				*rows;
+}						t_cmdtbl;
+
+t_cmdtbl				*create_cmdtbl();
+void					delete_cmdtbl(t_cmdtbl *cmdtbl);
+int						add_simcmd(t_cmdtbl **table);
+
+/*
+**	Data
+*/
+
+# define SET			0
+# define GET			1
+
+typedef struct			s_data
+{
+	char				*input_line;
+	char				**envs;
+	t_dlist				*history;
+	t_cmdtbl			*table;
+	t_dlist				*wordlist;
+	int					last_return;
+	t_bool				is_exit;
+}						t_data;
+
+void					data_container(int set_get, t_data *ret_data);
+
+/*
 **	Enviroment
 */
 
-typedef struct			s_env
-{
-	char				**envs;
-	int					last_return;
-	t_bool				is_exit;
-}						t_env;
-
-int						init_env(char **envp, t_env *env);
+int						init_env(char **envp, t_data *env);
 int						add_env_var(char ***envs, char *name, char *value);
 char					*find_env_var(char **envp, char *name);
 
@@ -93,7 +120,7 @@ static char				g_term_buffer[2048];
 # define RIGHT			4
 # define CTRL_D			'\x04'
 
-int						readline(char **output, t_dlist **history, t_env *env);
+int						readline(char **output, t_dlist **history, t_data *env);
 
 int						apply_func(t_dlist **history,
 												int (*fun)(t_record *record));
@@ -217,23 +244,10 @@ void					delete_simcmd(void *content);
 int						add_arg(t_simcmd *simcmd, char *arg);
 
 /*
-** Command table structures.
-*/
-
-typedef struct			s_cmdtbl
-{
-	t_dlist				*rows;
-}						t_cmdtbl;
-
-t_cmdtbl				*create_cmdtbl();
-void					delete_cmdtbl(t_cmdtbl *cmdtbl);
-int						add_simcmd(t_cmdtbl **table);
-
-/*
 **	Expand
 */
 
-int						run_expansion(t_cmdtbl **table, t_env *env);
+int						run_expansion(t_cmdtbl **table, t_data *env);
 
 /*
 **	Execute
@@ -247,7 +261,7 @@ typedef struct			s_fd
 	int					tmpin;
 }						t_fd;
 
-int						execute(t_cmdtbl *table, t_env *env);
+int						execute(t_cmdtbl *table, t_data *env);
 
 int						setup_fd(t_bool is_last, t_fd *fd, t_simcmd *simcmd);
 int						restore_fd(t_fd *fd);
@@ -273,13 +287,13 @@ int						filename(t_dlist **wordlist, t_simcmd *simcmd);
 */
 
 int						buildin_echo(int argc, char **argv);
-int						buildin_cd(int argc, char **argv, t_env *env);
+int						buildin_cd(int argc, char **argv, t_data *env);
 int						buildin_pwd();
-int						buildin_export(int argc, char **argv, t_env *env);
-int						buildin_unset(int argc, char **argv, t_env *env);
+int						buildin_export(int argc, char **argv, t_data *env);
+int						buildin_unset(int argc, char **argv, t_data *env);
 char					**buildin_unset2(char *name, char **envs, int env_len);
-int						buildin_env(t_env *env);
-int						buildin_exit(int argc, char **argv, t_env *env);
+int						buildin_env(t_data *env);
+int						buildin_exit(int argc, char **argv, t_data *env);
 
 void					print_declare_x(char *s1, char *s2);
 char					**buildin_unset2(char *argv, char **env, int len);
@@ -314,23 +328,5 @@ char					**splite_path(char **envp);
 char					*search_in_path(char *name, char **envp);
 char					*find_program(char *program_name, char **envp);
 t_bool					check_dir_path(char *path);
-
-/*
-**	Data
-*/
-
-# define SET			0
-# define GET			1
-
-typedef struct			s_data
-{
-	char				*input_line;
-	t_env				*env;
-	t_dlist				*history;
-	t_cmdtbl			*table;
-	t_dlist				*wordlist;
-}						t_data;
-
-void					data_container(int set_get, t_data *ret_data);
 
 #endif

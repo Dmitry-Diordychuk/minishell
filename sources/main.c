@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/16 17:02:09 by kdustin           #+#    #+#             */
-/*   Updated: 2021/03/26 00:38:52 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/03/26 15:40:02 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,14 +43,14 @@ int		run_command(t_data *data)
 		data->table = NULL;
 		if ((error = run_parser(&data->wordlist, &data->table)))
 			return (error);
-		if ((error = run_expansion(&data->table, data->env)))
+		if ((error = run_expansion(&data->table, data)))
 			return (error);
-		if ((error = execute(data->table, data->env)))
+		if ((error = execute(data->table, data)))
 			return (error);
 		delete_cmdtbl(data->table);
-		if (data->env->is_exit == TRUE)
+		if (data->is_exit == TRUE)
 			free(data->wordlist);
-		if (data->env->is_exit == TRUE)
+		if (data->is_exit == TRUE)
 			break ;
 	}
 	return (error ? error : SUCCESSED);
@@ -65,20 +65,20 @@ int		run_loop(t_data *data)
 	{
 		set_signals(SIGMOD_SHELL);
 		ft_putstr_fd("minishell: ", 1);
-		if (readline(&data->input_line, &data->history, data->env))
+		if (readline(&data->input_line, &data->history, data))
 			return (ERROR);
-		if (data->env->is_exit == TRUE)
+		if (data->is_exit == TRUE)
 			free(data->input_line);
-		if (data->env->is_exit == TRUE)
+		if (data->is_exit == TRUE)
 			return (SUCCESSED);
 		error = run_command(data);
 		if (error == ALLOCATION_ERROR)
 			return (ALLOCATION_ERROR);
 		else if (error == TOKEN_ERROR)
-			data->env->last_return = 258;
+			data->last_return = 258;
 		free(data->input_line);
 		data->input_line = NULL;
-		if (data->env->is_exit == TRUE)
+		if (data->is_exit == TRUE)
 			return (SUCCESSED);
 	}
 	return (SUCCESSED);
@@ -101,20 +101,17 @@ int		main(int argc, char **argv, char **envp)
 
 	data_container(SET, &data);
 	data.history = NULL;
-	if (!(data.env = (t_env*)malloc(sizeof(t_env))))
+	if (init_env(envp, &data))
 		return (ERROR);
-	if (init_env(envp, data.env))
-		return (ERROR);
-	data.env->envs =
-			buildin_unset2("OLDPWD", data.env->envs, array_len(data.env->envs));
+	data.envs =
+			buildin_unset2("OLDPWD", data.envs, array_len(data.envs));
 	if (check_command_argument(&(data.input_line), argc, argv))
 		error = run_command(&data);
 	else
 		error = run_loop(&data);
-	free_array(data.env->envs);
-	free(data.env);
+	free_array(data.envs);
 	ft_dlst_clear(&data.history, delete_record);
 	if (error)
 		return (error);
-	return (data.env->last_return);
+	return (data.last_return);
 }

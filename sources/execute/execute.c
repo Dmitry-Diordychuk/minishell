@@ -6,22 +6,24 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/17 11:18:59 by kdustin           #+#    #+#             */
-/*   Updated: 2021/03/26 00:43:23 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/03/26 15:31:03 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int		wait_after_fork(t_env *env, int ret)
+int		wait_after_fork(t_data *env)
 {
 	int		status;
 
 	set_signals(SIGMOD_WAIT);
-	if (waitpid(ret, &status, WNOHANG | WUNTRACED) == -1)
+	if (wait(&status) == -1)
 	{
 		ft_putendl_fd(strerror(errno), 1);
 		exit(free_data(1));
 	}
+	if (WIFEXITED(status))
+		env->last_return = WEXITSTATUS(status);
 	if (WIFSIGNALED(status))
 	{
 		if (WTERMSIG(status) == SIGINT)
@@ -31,16 +33,15 @@ int		wait_after_fork(t_env *env, int ret)
 			write(1, "Quit: 3", 7);
 			env->last_return = 131;
 		}
-		write(1, "T", 1);
+		if (WTERMSIG(status) == SIGINT || WTERMSIG(status) == SIGQUIT)
+			write(1, "\n", 1);
 	}
-	else if (WIFEXITED(status))
-		env->last_return = WEXITSTATUS(status);
 	else
 		return (ERROR);
 	return (SUCCESSED);
 }
 
-int		execute_fork(char *filename, char **argv, t_env *env)
+int		execute_fork(char *filename, char **argv, t_data *env)
 {
 	int		ret;
 
@@ -54,12 +55,12 @@ int		execute_fork(char *filename, char **argv, t_env *env)
 		exit(1);
 	}
 	else if (ret > 0)
-		wait_after_fork(env, ret);
+		wait_after_fork(env);
 	free(filename);
 	return (ret);
 }
 
-int		execute_buildin(t_simcmd *simcmd, t_env *env)
+int		execute_buildin(t_simcmd *simcmd, t_data *env)
 {
 	int result;
 
@@ -84,7 +85,7 @@ int		execute_buildin(t_simcmd *simcmd, t_env *env)
 	return (result);
 }
 
-int		execute_simcmds(t_cmdtbl *table, t_env *env, t_fd *fd, int *pid)
+int		execute_simcmds(t_cmdtbl *table, t_data *env, t_fd *fd, int *pid)
 {
 	t_diter		iter;
 	t_simcmd	*simcmd;
@@ -109,7 +110,7 @@ int		execute_simcmds(t_cmdtbl *table, t_env *env, t_fd *fd, int *pid)
 	return (SUCCESSED);
 }
 
-int		execute(t_cmdtbl *table, t_env *env)
+int		execute(t_cmdtbl *table, t_data *env)
 {
 	t_fd	fd;
 	int		pid;

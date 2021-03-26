@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/17 05:25:55 by kdustin           #+#    #+#             */
-/*   Updated: 2021/03/20 20:59:18 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/03/26 15:23:35 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,7 +91,7 @@ char	**buildin_export2(char *argv, char **env, int z)
 	return (ne);
 }
 
-int		buildin_export(int argc, char **argv, t_env *env)
+int		buildin_export(int argc, char **argv, t_data *env)
 {
 	int			i;
 	int			z;

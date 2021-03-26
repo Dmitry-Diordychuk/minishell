@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/17 05:26:04 by kdustin           #+#    #+#             */
-/*   Updated: 2021/03/20 21:00:29 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/03/26 15:23:58 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,7 @@ char				**buildin_unset2(char *argv, char **env, int len)
 	return (ne);
 }
 
-int					buildin_unset(int argc, char **argv, t_env *env)
+int					buildin_unset(int argc, char **argv, t_data *env)
 {
 	int				i;
 	int				len;

@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/17 05:25:47 by kdustin           #+#    #+#             */
-/*   Updated: 2021/03/24 21:03:20 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/03/26 15:29:52 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ int			buildin_exit3(int i)
 	return (i);
 }
 
-int			buildin_exit2(int argc, t_env *env, int ii)
+int			buildin_exit2(int argc, t_data *env, int ii)
 {
 	if (argc > 2)
 	{
@@ -70,7 +70,7 @@ int			buildin_exit2(int argc, t_env *env, int ii)
 	return (0);
 }
 
-int			buildin_exit(int argc, char **argv, t_env *env)
+int			buildin_exit(int argc, char **argv, t_data *env)
 {
 	int					ii;
 	char				*s;

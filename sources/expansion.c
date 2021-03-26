@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/03/17 12:13:50 by kdustin           #+#    #+#             */
-/*   Updated: 2021/03/25 20:50:13 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/03/26 15:36:57 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,7 @@ static int	init_redirection_error(char **path, char **ret_name, int error)
 }
 
 int			init_redirection_field(char **ret_name, t_dlist **file_tokens,
-								int io_type, t_env *env)
+								int io_type, t_data *env)
 {
 	char	*path;
 	int		error;
@@ -86,7 +86,7 @@ int			init_redirection_field(char **ret_name, t_dlist **file_tokens,
 	return (SUCCESSED);
 }
 
-int			expand_redirection(t_cmdtbl **table, t_env *env)
+int			expand_redirection(t_cmdtbl **table, t_data *env)
 {
 	int			error;
 	t_diter		iter;
@@ -109,7 +109,7 @@ int			expand_redirection(t_cmdtbl **table, t_env *env)
 	return (SUCCESSED);
 }
 
-int			run_expansion(t_cmdtbl **table, t_env *e)
+int			run_expansion(t_cmdtbl **table, t_data *e)
 {
 	t_diter		iter;
 	t_simcmd	*s;

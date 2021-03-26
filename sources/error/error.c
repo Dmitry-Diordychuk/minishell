@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   error.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: kdustin <kdustin@student.42.fr>            +#+  +:+       +#+        */
+/*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/17 05:28:29 by kdustin           #+#    #+#             */
-/*   Updated: 2021/03/25 00:58:04 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/03/26 14:58:34 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,13 +27,10 @@ int		free_data(int ret)
 	t_data data;
 
 	data_container(GET, &data);
-	free_array(data.env->envs);
-	data.env->envs = NULL;
 	delete_cmdtbl(data.table);
 	data.table = NULL;
 	ft_dlst_clear(&data.history, delete_record);
 	ft_dlst_clear(&data.wordlist, delete_word_desc);
-	free(data.input_line);
 	data.input_line = NULL;
 	return (ret);
 }

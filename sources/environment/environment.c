@@ -6,13 +6,13 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/20 22:27:20 by kdustin           #+#    #+#             */
-/*   Updated: 2021/03/24 18:26:05 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/03/26 15:30:19 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int		init_env(char **envp, t_env *env)
+int		init_env(char **envp, t_data *env)
 {
 	int		i;
 	int		len;

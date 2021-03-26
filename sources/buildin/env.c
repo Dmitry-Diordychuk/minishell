@@ -6,7 +6,7 @@
 /*   By: kdustin <kdustin@student.21-school.ru>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/17 05:25:34 by kdustin           #+#    #+#             */
-/*   Updated: 2021/03/20 20:58:44 by kdustin          ###   ########.fr       */
+/*   Updated: 2021/03/26 15:23:20 by kdustin          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 #include "minishell.h"
 
-int				buildin_env(t_env *env)
+int				buildin_env(t_data *env)
 {
 	char		**ne;
 	int			i;
